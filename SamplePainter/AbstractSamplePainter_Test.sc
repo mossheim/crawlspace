@@ -4,7 +4,7 @@ AbstractSamplePainter_Test : UnitTest {
 	}
 
 	testDir {
-		^"sp_test/".resolveRelative;
+		^"test_audio/".resolveRelative;
 	}
 
 	path_2ch96 {^this.testDir +/+ "bach_stereo_96.wav"}
