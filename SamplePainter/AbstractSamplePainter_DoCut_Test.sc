@@ -30,10 +30,10 @@ AbstractSamplePainter_DoCut_Test : UnitTest {
 	}
 
 	testFile {
-		^this.testDir +/+ "test.wav";
+		^this.class.testDir +/+ "test.wav";
 	}
 
-	testDir {
+	*testDir {
 		^"test_audio/".resolveRelative;
 	}
 
