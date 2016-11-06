@@ -138,58 +138,6 @@ SimpleSamplePainter_Test : UnitTest {
 		this.doTestPasteFunc_add(8);
 	}
 
-		/*var pf = PasteFunc(\replace, SimpleSamplePainter.paste_replace, 1);
-		var mu, sf, arr;
-		SimpleSamplePainter.nChannels_(1);
-		mu = SimpleSamplePainter(this.testFile, 10000, [], [], [pf]);
-		// paste in all 1's (also tests end-of-file paste)
-		mu.doPaste(pf, 0, [FloatArray.fill(10000, 1)]);
-		mu.doPaste(pf, 100, [this.class.pattern]);
-		mu.doPaste(pf, 500, [FloatArray.fill(1000, 0)]);
-		mu.doPaste(pf, 9000, [this.class.pattern]);
-
-		// read in file and verify results
-		sf = SoundFile.openRead(this.testFile);
-
-		// region 1: all 1's
-		arr = FloatArray.newClear(100);
-		sf.readData(arr);
-		this.assert(arr.size == 100, "region 1 size: 100");
-		this.assert(arr.every(_==1), "region 1: all 1's");
-
-		// region 2: test pattern
-		arr = FloatArray.newClear(6);
-		sf.readData(arr);
-		this.assert(arr.size == 6, "region 2 size: 6");
-		this.assertEquals(arr, this.class.pattern, "region 2: test p");
-
-		// region 3: all 1s
-		arr = FloatArray.newClear(500-106);
-		sf.readData(arr);
-		this.assert(arr.size == (500-106), "region 3 size: %".format(500-106));
-		this.assert(arr.every(_==1), "region 3: 1s");
-
-		// region 4: all 0s
-		arr = FloatArray.newClear(1000);
-		sf.readData(arr);
-		this.assert(arr.size == 1000, "region 4 size: 1000");
-		this.assert(arr.every(_==0), "region 4: 0s");
-
-		// region 5: all 1s
-		sf.readData(arr = FloatArray.newClear(9000 - 1500));
-		this.assert(arr.size == (9000-1500), "region 5 size: %".format(9000-1500));
-		this.assert(arr.every(_==1), "region 5: 1s");
-
-		// region 6: test pattern
-		sf.readData(arr = FloatArray.newClear(6));
-		this.assert(arr.size == 6, "region 6 size: 6");
-		this.assertEquals(arr, this.class.pattern, "region 6: test p");
-
-		// region 7: 1s
-		sf.readData(arr = FloatArray.newClear(10000-9006));
-		this.assertEquals(arr.size, (10000-9006), "region 7 size: 994");
-		this.assert(arr.every(_==1), "region 7: 1s");
-	}*/
 
 	doTestPasteFunc_replace {
 		arg nch;
