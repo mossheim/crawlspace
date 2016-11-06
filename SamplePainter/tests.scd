@@ -2,7 +2,7 @@
 ~countdown = {
 	arg time;
 	post("paused for next test: ");
-	forBy(time, 0, -1, {
+	forBy(time, 1, -1, {
 		|i|
 		post("% ".format(i));
 		1.wait;
