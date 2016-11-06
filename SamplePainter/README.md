@@ -1,6 +1,6 @@
 # SamplePainter
 
-SamplePainter is the oldest, most abstract, and most versatile component of *crawlspace*. At present it is simply an empty algorithmic framework with the following steps:
+`SamplePainter` is the oldest, most abstract, and most versatile component of *crawlspace*. At present it is simply an empty algorithmic framework with the following steps:
 
 * Create a silent audio file (the output file)
 * Main loop:
@@ -22,18 +22,18 @@ Each step in this process can be implemented to be dependent on previous decisio
   
 ## Implementation stack
 
-### 1. AbstractSamplePainter
+### 1. `AbstractSamplePainter`
 
 Contains basic methods for the framework, with no implementations. Also includes the `SamplePainterFunc` class and its subclasses `PasteFunc` and `ModifyFunc`, which encapsulate information about the functions that are used to modify the cut audio segment and combine it with existing data in the output file.
 
-### 2. SimpleSamplePainter
+### 2. `SimpleSamplePainter`
 
 Provides a basic, functioning product. Most decision-making methods work on uniform distributions.
 
-### 3. RealTimeSamplePainter
+### 3. `RealTimeSamplePainter`
 
 Allows SamplePainter to easily use Synths to perform modifications. Provides factory methods that allow concise Synth definitions.
 
-### 4. ThreadedSamplePainter
+### 4. `ThreadedSamplePainter`
 
 Adds "multithreading". Since SC is not a multithreading language, the parallel processing is only happening on the Server. For certain conditions this is a huge benefit, since the next cycles of the program can run their slow real-time processing modifications on the Server alongside the current cycle. In other words, a long audio segment that requires multiple passes on the Server will not make as terrible a bottleneck.
