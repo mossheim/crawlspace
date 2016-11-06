@@ -8,15 +8,15 @@ AbstractSamplePainter_DoCut_Test : UnitTest {
 	}
 
 	*precision_mono {
-		^"/users/brianheim/desktop/mu_test/precision_test_mono.wav";
+		^this.testDir +/+ "precision_test_mono.wav";
 	}
 
 	*precision_stereo {
-		^"/users/brianheim/desktop/mu_test/precision_test_stereo.wav";
+		^this.testDir +/+ "precision_test_stereo.wav";
 	}
 
 	*precision_quad {
-		^"/users/brianheim/desktop/mu_test/precision_test_quad.wav";
+		^this.testDir +/+ "precision_test_quad.wav";
 	}
 
 	*isTestPatternMatch {
@@ -29,39 +29,39 @@ AbstractSamplePainter_DoCut_Test : UnitTest {
 		^pat == this.pattern2;
 	}
 
-	testPath {
-		^"/Users/brianheim/Desktop/mu_test/test.wav";
+	testFile {
+		^this.testDir +/+ "test.wav";
 	}
 
-	testFolder {
-		^"/Users/brianheim/Desktop/mu_test/";
+	testDir {
+		^"sp_test/".resolveRelative;
 	}
 
-	path_2ch96 {^"/Users/brianheim/Desktop/mu_test/bach_stereo_96.wav"}
-	path_2ch44 {^"/Users/brianheim/Desktop/mu_test/beet_stereo_44.wav"}
-	path_1ch96 {^"/Users/brianheim/Desktop/mu_test/bach_mono_96.wav"}
-	path_1ch44 {^"/Users/brianheim/Desktop/mu_test/beet_mono_44.wav"}
+	path_2ch96 {^this.testDir +/+ "bach_stereo_96.wav"}
+	path_2ch44 {^this.testDir +/+ "beet_stereo_44.wav"}
+	path_1ch96 {^this.testDir +/+ "bach_mono_96.wav"}
+	path_1ch44 {^this.testDir +/+ "beet_mono_44.wav"}
 
 	setUp {
-		if(File.exists(this.testPath)) {File.delete(this.testPath)};
+		if(File.exists(this.testFile)) {File.delete(this.testFile)};
 		AbstractSamplePainter.nChannels_(2);
 		AbstractSamplePainter.sr_(44100);
 	}
 
 	tearDown {
-		if(File.exists(this.testPath)) {File.delete(this.testPath)};
+		if(File.exists(this.testFile)) {File.delete(this.testFile)};
 		AbstractSamplePainter.nChannels_(2);
 		AbstractSamplePainter.sr_(44100);
 	}
 
-	createMU {
-		var mu = AbstractSamplePainter(this.testPath, 10000, [], [], []);
-		^mu;
+	createSP {
+		var sp = AbstractSamplePainter(this.testFile, 10000, [], [], []);
+		^sp;
 	}
 
 	makeCuts {
 		arg iregs, lregs, file;
-		var mu = this.createMU();
+		var sp = this.createSP();
 		var datas = [];
 		var sf = SoundFile(file);
 
@@ -70,7 +70,7 @@ AbstractSamplePainter_DoCut_Test : UnitTest {
 			var lreg;
 			lreg = lregs[i];
 			sf.openRead();
-			datas = datas add: mu.doCut(sf, ireg, lreg);
+			datas = datas add: sp.doCut(sf, ireg, lreg);
 			sf.close;
 		};
 

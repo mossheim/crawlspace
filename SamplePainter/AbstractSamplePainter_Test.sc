@@ -1,25 +1,25 @@
 AbstractSamplePainter_Test : UnitTest {
-	testPath {
-		^"/Users/brianheim/Desktop/mu_test/test.wav";
+	testFile {
+		^this.testDir +/+ "test.wav";
 	}
 
-	testFolder {
-		^"/Users/brianheim/Desktop/mu_test/";
+	testDir {
+		^"sp_test/".resolveRelative;
 	}
 
-	path_2ch96 {^"/Users/brianheim/Desktop/mu_test/bach_stereo_96.wav"}
-	path_2ch44 {^"/Users/brianheim/Desktop/mu_test/beet_stereo_44.wav"}
-	path_1ch96 {^"/Users/brianheim/Desktop/mu_test/bach_mono_96.wav"}
-	path_1ch44 {^"/Users/brianheim/Desktop/mu_test/beet_mono_44.wav"}
+	path_2ch96 {^this.testDir +/+ "bach_stereo_96.wav"}
+	path_2ch44 {^this.testDir +/+ "beet_stereo_44.wav"}
+	path_1ch96 {^this.testDir +/+ "bach_mono_96.wav"}
+	path_1ch44 {^this.testDir +/+ "beet_mono_44.wav"}
 
 	setUp {
-		if(File.exists(this.testPath)) {File.delete(this.testPath)};
+		if(File.exists(this.testFile)) {File.delete(this.testFile)};
 		AbstractSamplePainter.nChannels_(2);
 		AbstractSamplePainter.sr_(44100);
 	}
 
 	tearDown {
-		if(File.exists(this.testPath)) {File.delete(this.testPath)};
+		if(File.exists(this.testFile)) {File.delete(this.testFile)};
 		AbstractSamplePainter.nChannels_(2);
 		AbstractSamplePainter.sr_(44100);
 	}
@@ -27,17 +27,17 @@ AbstractSamplePainter_Test : UnitTest {
 	test_checkBasicConstructorFunctionality1000Frames {
 		// test basic output of the constructor.
 		// first with 1000 frames, then with 50000 frames
-		var outpath = this.testPath();
+		var outpath = this.testFile();
 		var nframes = 1000;
-		var mu = AbstractSamplePainter(outpath, nframes, [this.path_2ch44 -> 1], [], []);
+		var sp = AbstractSamplePainter(outpath, nframes, [this.path_2ch44 -> 1], [], []);
 		var sf, arr, runningtot = 0;
 
 		// test constructor assignments
-		this.assertEquals(mu.outFilename, outpath, "MU filename should match");
-		this.assert(mu.outFrames == 1000, "MU frames should match");
-		this.assertEquals(mu.sourceFileList, [this.path_2ch44 -> 1], "MU source file name should match");
-		this.assert(mu.modifyFuncList == [], "MU modify func list should match");
-		this.assert(mu.pasteFuncList == [], "MU paste func list should match");
+		this.assertEquals(sp.outFilename, outpath, "SP filename should match");
+		this.assert(sp.outFrames == 1000, "SP frames should match");
+		this.assertEquals(sp.sourceFileList, [this.path_2ch44 -> 1], "SP source file name should match");
+		this.assert(sp.modifyFuncList == [], "SP modify func list should match");
+		this.assert(sp.pasteFuncList == [], "SP paste func list should match");
 
 		// test that the created file is the correct number of channels and frames.
 		sf = SoundFile.openRead(outpath);
@@ -59,17 +59,17 @@ AbstractSamplePainter_Test : UnitTest {
 	test_checkBasicConstructorFunctionality50000Frames {
 		// test basic output of the constructor.
 		// first with 1000 frames, then with 50000 frames
-		var outpath = this.testPath();
+		var outpath = this.testFile();
 		var nframes = 50000;
-		var mu = AbstractSamplePainter(outpath, nframes, [this.path_2ch44 -> 1], [], []);
+		var sp = AbstractSamplePainter(outpath, nframes, [this.path_2ch44 -> 1], [], []);
 		var sf, arr, runningtot;
 
 		// test constructor assignments
-		this.assertEquals(mu.outFilename, outpath, "MU filename should match");
-		this.assert(mu.outFrames == 50000, "MU frames should match");
-		this.assertEquals(mu.sourceFileList, [this.path_2ch44 -> 1], "MU source file name should match");
-		this.assert(mu.modifyFuncList == [], "MU modify func list should match");
-		this.assert(mu.pasteFuncList == [], "MU paste func list should match");
+		this.assertEquals(sp.outFilename, outpath, "SP filename should match");
+		this.assert(sp.outFrames == 50000, "SP frames should match");
+		this.assertEquals(sp.sourceFileList, [this.path_2ch44 -> 1], "SP source file name should match");
+		this.assert(sp.modifyFuncList == [], "SP modify func list should match");
+		this.assert(sp.pasteFuncList == [], "SP paste func list should match");
 
 		// test that the created file is the correct number of channels and frames.
 		sf = SoundFile.openRead(outpath);
@@ -98,15 +98,15 @@ AbstractSamplePainter_Test : UnitTest {
 			|sr|
 			chs.do {
 				|ch|
-				var mu, sf, rtot = 0, arr = FloatArray.newClear(100);
-				// create mu
-				this.assert(File.exists(this.testPath).not);
+				var sp, sf, rtot = 0, arr = FloatArray.newClear(100);
+				// create sp
+				this.assert(File.exists(this.testFile).not);
 				AbstractSamplePainter.nChannels_(ch);
 				AbstractSamplePainter.sr_(sr);
-				mu = AbstractSamplePainter(this.testPath, nframes, [this.path_2ch44 -> 1], [], []);
+				sp = AbstractSamplePainter(this.testFile, nframes, [this.path_2ch44 -> 1], [], []);
 
 				// new sound file
-				sf = SoundFile.openRead(this.testPath);
+				sf = SoundFile.openRead(this.testFile);
 				this.assertEquals(sf.numChannels, ch);
 				this.assertEquals(sf.numFrames, nframes);
 				this.assertEquals(sf.sampleRate, sr);
@@ -118,39 +118,39 @@ AbstractSamplePainter_Test : UnitTest {
 				};
 				this.assertEquals(rtot, 0, "Output must be silent: % %".format(ch, sr));
 				sf.close;
-				File.delete(this.testPath);
-				this.assert(File.exists(this.testPath).not, "delete worked");
+				File.delete(this.testFile);
+				this.assert(File.exists(this.testFile).not, "delete worked");
 			}
 		}
 
 	}
 
 	test_doCutStereoReturnArrayHasCorrectSize {
-		var mu = AbstractSamplePainter(this.testPath, 10000, [], [], []);
+		var sp = AbstractSamplePainter(this.testFile, 10000, [], [], []);
 		var sf = SoundFile.openRead(this.path_2ch44);
-		var data = mu.doCut(sf, 0, 1000);
+		var data = sp.doCut(sf, 0, 1000);
 		this.assertEquals(data.size, 2, "data size = channels");
 		data.do {|chdata,i| this.assertEquals(chdata.size, 1000, "data ch size = cut frames")};
-		data = mu.doCut(sf, 1000, 3000);
+		data = sp.doCut(sf, 1000, 3000);
 		this.assertEquals(data.size, 2, "data size = channels");
 		data.do {|chdata,i| this.assertEquals(chdata.size, 3000, "data ch size = cut frames")};
-		data = mu.doCut(sf, sf.numFrames - 1000, 1000);
+		data = sp.doCut(sf, sf.numFrames - 1000, 1000);
 		this.assertEquals(data.size, 2, "data size = channels");
 		data.do {|chdata,i| this.assertEquals(chdata.size, 1000, "data ch size = cut frames")};
 	}
 
 	test_doCutMonoReturnArrayHasCorrectSize {
-		var mu, sf, data;
+		var sp, sf, data;
 		AbstractSamplePainter.nChannels_(1);
-		mu = AbstractSamplePainter(this.testPath, 10000, [], [], []);
+		sp = AbstractSamplePainter(this.testFile, 10000, [], [], []);
 		sf = SoundFile.openRead(this.path_1ch44);
-		data = mu.doCut(sf, 0, 1000);
+		data = sp.doCut(sf, 0, 1000);
 		this.assertEquals(data.size, 1, "data size = channels");
 		data.do {|chdata,i| this.assertEquals(chdata.size, 1000, "data ch size = cut frames")};
-		data = mu.doCut(sf, 1000, 3000);
+		data = sp.doCut(sf, 1000, 3000);
 		this.assertEquals(data.size, 1, "data size = channels");
 		data.do {|chdata,i| this.assertEquals(chdata.size, 3000, "data ch size = cut frames")};
-		data = mu.doCut(sf, sf.numFrames - 1000, 1000);
+		data = sp.doCut(sf, sf.numFrames - 1000, 1000);
 		this.assertEquals(data.size, 1, "data size = channels");
 		data.do {|chdata,i| this.assertEquals(chdata.size, 1000, "data ch size = cut frames")};
 	}

@@ -17,38 +17,38 @@ SimpleSamplePainter_Test : UnitTest {
 		^pat = this.pattern2;
 	}
 
-	testPath {
-		^"/Users/brianheim/Desktop/mu_test/test.wav";
+	testFile {
+		^this.testDir +/+ "test.wav";
 	}
 
-	testFolder {
-		^"/Users/brianheim/Desktop/mu_test/";
+	testDir {
+		^"sp_test/".resolveRelative;
 	}
 
-	path_2ch96 {^"/Users/brianheim/Desktop/mu_test/bach_stereo_96.wav"}
-	path_2ch44 {^"/Users/brianheim/Desktop/mu_test/beet_stereo_44.wav"}
-	path_1ch96 {^"/Users/brianheim/Desktop/mu_test/bach_mono_96.wav"}
-	path_1ch44 {^"/Users/brianheim/Desktop/mu_test/beet_mono_44.wav"}
+	path_2ch96 {^this.testDir +/+ "bach_stereo_96.wav"}
+	path_2ch44 {^this.testDir +/+ "beet_stereo_44.wav"}
+	path_1ch96 {^this.testDir +/+ "bach_mono_96.wav"}
+	path_1ch44 {^this.testDir +/+ "beet_mono_44.wav"}
 
 	setUp {
-		if(File.exists(this.testPath)) {File.delete(this.testPath)};
+		if(File.exists(this.testFile)) {File.delete(this.testFile)};
 		SimpleSamplePainter.nChannels_(2);
 		SimpleSamplePainter.sr_(44100);
 	}
 
 	tearDown {
-		if(File.exists(this.testPath)) {File.delete(this.testPath)};
+		if(File.exists(this.testFile)) {File.delete(this.testFile)};
 		SimpleSamplePainter.nChannels_(2);
 		SimpleSamplePainter.sr_(44100);
 	}
 
 	createMU {
-		var mu = SimpleSamplePainter(this.testPath, 10000, [], [], []);
+		var mu = SimpleSamplePainter(this.testFile, 10000, [], [], []);
 		^mu;
 	}
 
 	test_chooseCutFile {
-		var mu = SimpleSamplePainter(this.testPath, 1000, [this.path_2ch96 -> 1, this.path_2ch44 -> 0], [], []);
+		var mu = SimpleSamplePainter(this.testFile, 1000, [this.path_2ch96 -> 1, this.path_2ch44 -> 0], [], []);
 		var arr;
 
 		// 1-0 probability returns only first result
@@ -56,13 +56,13 @@ SimpleSamplePainter_Test : UnitTest {
 			this.assertEquals(mu.chooseCutFile, this.path_2ch96, "probability of 1 should always work");
 		};
 
-		mu = SimpleSamplePainter(this.testPath, 1000, [this.path_2ch96 -> 0, this.path_2ch44 -> 1], [], []);
+		mu = SimpleSamplePainter(this.testFile, 1000, [this.path_2ch96 -> 0, this.path_2ch44 -> 1], [], []);
 		// 0-1 probability returns only first result
 		10.do {
 			this.assertEquals(mu.chooseCutFile, this.path_2ch44, "probability of 1 should always work");
 		};
 
-		mu = SimpleSamplePainter(this.testPath, 1000, [this.path_2ch96 -> 1, this.path_2ch44 -> 1], [], []);
+		mu = SimpleSamplePainter(this.testFile, 1000, [this.path_2ch96 -> 1, this.path_2ch44 -> 1], [], []);
 		// 1-1 probability returns roughly half
 		arr = 100.collect {mu.chooseCutFile()};
 		this.assert(arr.includes(this.path_2ch96) && arr.includes(this.path_2ch44), "results of 50-50 split: %-%".format(arr.occurrencesOf(this.path_2ch96), arr.occurrencesOf(this.path_2ch44)));
@@ -72,7 +72,7 @@ SimpleSamplePainter_Test : UnitTest {
 		var pf1 = PasteFunc(\paste, SimpleSamplePainter.paste_replace, 1);
 		var pf2 = PasteFunc(\add, SimpleSamplePainter.paste_add, 0);
 
-		var mu = SimpleSamplePainter(this.testPath, 1000, [], [], [pf1, pf2]);
+		var mu = SimpleSamplePainter(this.testFile, 1000, [], [], [pf1, pf2]);
 		var arr;
 
 		this.assertEquals(pf1.probability(nil), 1);
@@ -84,7 +84,7 @@ SimpleSamplePainter_Test : UnitTest {
 
 		pf1 = PasteFunc(\paste, SimpleSamplePainter.paste_replace, 0);
 		pf2 = PasteFunc(\add, SimpleSamplePainter.paste_add, 1);
-		mu = SimpleSamplePainter(this.testPath, 1000, [], [], [pf1, pf2]);
+		mu = SimpleSamplePainter(this.testFile, 1000, [], [], [pf1, pf2]);
 		// 0-1 probability returns only first result
 		10.do {
 			this.assertEquals(mu.choosePasteFunc, pf2, "probability of 1 should always work");
@@ -92,7 +92,7 @@ SimpleSamplePainter_Test : UnitTest {
 
 		pf1 = PasteFunc(\paste, SimpleSamplePainter.paste_replace, 1);
 		pf2 = PasteFunc(\add, SimpleSamplePainter.paste_add, 1);
-		mu = SimpleSamplePainter(this.testPath, 1000, [], [], [pf1, pf2]);
+		mu = SimpleSamplePainter(this.testFile, 1000, [], [], [pf1, pf2]);
 		// 1-1 probability returns roughly half
 		arr = 100.collect {mu.choosePasteFunc()};
 		this.assert(arr.includes(pf1) && arr.includes(pf2), "results of 50-50 split: %-%".format(arr.occurrencesOf(pf1), arr.occurrencesOf(pf2)));
@@ -141,7 +141,7 @@ SimpleSamplePainter_Test : UnitTest {
 		/*var pf = PasteFunc(\replace, SimpleSamplePainter.paste_replace, 1);
 		var mu, sf, arr;
 		SimpleSamplePainter.nChannels_(1);
-		mu = SimpleSamplePainter(this.testPath, 10000, [], [], [pf]);
+		mu = SimpleSamplePainter(this.testFile, 10000, [], [], [pf]);
 		// paste in all 1's (also tests end-of-file paste)
 		mu.doPaste(pf, 0, [FloatArray.fill(10000, 1)]);
 		mu.doPaste(pf, 100, [this.class.pattern]);
@@ -149,7 +149,7 @@ SimpleSamplePainter_Test : UnitTest {
 		mu.doPaste(pf, 9000, [this.class.pattern]);
 
 		// read in file and verify results
-		sf = SoundFile.openRead(this.testPath);
+		sf = SoundFile.openRead(this.testFile);
 
 		// region 1: all 1's
 		arr = FloatArray.newClear(100);
@@ -196,7 +196,7 @@ SimpleSamplePainter_Test : UnitTest {
 		var pf = PasteFunc(\replace, SimpleSamplePainter.paste_replace, 1);
 		var mu, sf, arr, framelist;
 		SimpleSamplePainter.nChannels_(nch);
-		mu = SimpleSamplePainter(this.testPath, 10000, [], [], [pf]);
+		mu = SimpleSamplePainter(this.testFile, 10000, [], [], [pf]);
 		// paste in all 1's (also tests end-of-file paste)
 		mu.doPaste(pf, 0, {FloatArray.fill(10000, 1)}!nch);
 		mu.doPaste(pf, 100, {this.class.pattern}!nch);
@@ -205,7 +205,7 @@ SimpleSamplePainter_Test : UnitTest {
 		mu.doPaste(pf, 9000, {this.class.pattern}!nch);
 
 		// read in file and verify results
-		sf = SoundFile.openRead(this.testPath);
+		sf = SoundFile.openRead(this.testFile);
 
 		// region 1: all 1's
 		framelist = [100, 6, 300-106, 6, 500-306, 1000, 9000-1500, 6, 10000-9006];
@@ -263,7 +263,7 @@ SimpleSamplePainter_Test : UnitTest {
 		var pf = PasteFunc(\add, SimpleSamplePainter.paste_add, 1);
 		var mu, sf, arr, framelist;
 		SimpleSamplePainter.nChannels_(nch);
-		mu = SimpleSamplePainter(this.testPath, 10000, [], [], [pf]);
+		mu = SimpleSamplePainter(this.testFile, 10000, [], [], [pf]);
 		// paste in all 1's (also tests end-of-file paste)
 		mu.doPaste(pf, 0, {FloatArray.fill(10000, 1)}!nch);
 		mu.doPaste(pf, 100, {this.class.pattern}!nch);
@@ -273,7 +273,7 @@ SimpleSamplePainter_Test : UnitTest {
 		mu.doPaste(pf, 9000, {this.class.pattern}!nch);
 
 		// read in file and verify results
-		sf = SoundFile.openRead(this.testPath);
+		sf = SoundFile.openRead(this.testFile);
 
 		// region 1: all 1's
 		framelist = [100, 6, 300-106, 6, 500-306, 1000, 1000, 1000, 9000-3500, 6, 10000-9006];
@@ -340,7 +340,7 @@ SimpleSamplePainter_Test : UnitTest {
 		modifyFunc = ModifyFunc(\do_nothing, SimpleSamplePainter.modify_doNothing, 1);
 		pasteFunc = PasteFunc(\replace, SimpleSamplePainter.paste_replace, 1);
 		SimpleSamplePainter.nChannels_(2);
-		mu = SimpleSamplePainter(this.testPath, outputDur, [sourceFile -> 1], [modifyFunc], [pasteFunc]);
+		mu = SimpleSamplePainter(this.testFile, outputDur, [sourceFile -> 1], [modifyFunc], [pasteFunc]);
 
 		mu.cycle();
 
@@ -370,7 +370,7 @@ SimpleSamplePainter_Test : UnitTest {
 		this.assertEquals(data[0].size, cutDur, report:false);
 
 		// test output file in 3 regions: pre-paste, paste, post-paste
-		outsf = SoundFile.openRead(this.testPath);
+		outsf = SoundFile.openRead(this.testFile);
 
 		// pre-paste region
 		arr = FloatArray.newClear(pasteFrame * 2);
