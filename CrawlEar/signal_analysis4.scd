@@ -9,9 +9,10 @@ fork {
 	// var thresh = 0.5065; // 2.5-sig for 50%-ile
 	var threshdur = 0.5;
 	var offsetframes = 0.08*s.sampleRate;
-	var path = "/Users/brianheim/Desktop/mu_test/analysis_test_writes/";
+	var path = "test_audio/analysis_test_writes/".resolveRelative;
+	var audiofolder = "test_audio".resolveRelative;
 
-	playbuf = Buffer.read(s,"/Users/brianheim/Desktop/mu_test/drift.wav");
+	playbuf = Buffer.read(s,audiofolder+/+"drift.wav");
 	recordbufs = Buffer.allocConsecutive(2, s, maxdur*s.sampleRate, 1);
 	~recordbufs = recordbufs;
 	krbus = Bus.control(s, 5);
@@ -176,8 +177,8 @@ SynthDef(\segmenter, {
 
 SynthDef(\playbuf, {
 	arg bufnum, out;
-	var sig = PlayBuf.ar(2, bufnum, BufRateScale.ir(bufnum))[0];
-	ReplaceOut.ar(out, sig);
+	var sig = PlayBuf.ar(2, bufnum, BufRateScale.ir(bufnum));
+	ReplaceOut.ar(out, sig[0]);
 }).add;
 
 // )(
@@ -204,7 +205,7 @@ fork {
 	~playbuf.free;
 	~recordbufs.do(_.free);
 
-	~playbuf = Buffer.read(s,"/Users/brianheim/Desktop/mu_test/drift.wav");
+	~playbuf = Buffer.read(s,~read_path +/+ "stephen_4_pizz.wav");
 	~recordbufs = Buffer.allocConsecutive(2, s, ~max_seg_dur * s.sampleRate, 1);
 
 	// create buses

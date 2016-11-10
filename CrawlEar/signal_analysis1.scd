@@ -1,11 +1,12 @@
 (
 fork {
+	var folder = "test_audio".resolveRelative;
 	s.bootSync(Condition());
-	b = Buffer.read(s,"/Users/brianheim/Desktop/mu_test/drift.wav");
-	c = Buffer.read(s,"/Users/brianheim/Desktop/mu_test/petals.wav");
-	d = Buffer.read(s,"/Users/brianheim/Desktop/mu_test/bach_stereo_96.wav");
+	b = Buffer.read(s,folder+/+"drift.wav");
+	c = Buffer.read(s,folder+/+"petals.wav");
+	d = Buffer.read(s,folder+/+"bach_stereo_96.wav");
 	e = Buffer.alloc(s,s.sampleRate.nextPowerOfTwo.nextPowerOfTwo,8);
-	e.write("/Users/brianheim/Desktop/mu_test/bufwrite_test.wav", "wave", "float", leaveOpen:true);
+	e.write(folder+/+"bufwrite_test.wav", "wave", "float", leaveOpen:true);
 };
 )
 
@@ -33,24 +34,25 @@ var buf = b;
 (
 s.options.sampleRate_(48000);
 fork {
-	var dur, files;
+	var dur, files, folder;
 	s.bootSync(Condition());
+	folder = "test_audio".resolveRelative;
 	files = [
-"/Users/brianheim/Desktop/mu_test/bach_stereo_96_normalized.wav",
-"/Users/brianheim/Desktop/mu_test/drift.wav",
-"/Users/brianheim/Desktop/mu_test/petals.wav",
-"/Users/brianheim/Desktop/mu_test/stephen_1_nodes.wav",
-"/Users/brianheim/Desktop/mu_test/stephen_2_drag.wav",
-"/Users/brianheim/Desktop/mu_test/stephen_3_scratch.wav",
-"/Users/brianheim/Desktop/mu_test/stephen_4_pizz.wav"
-];
+		"bach_stereo_96_normalized.wav",
+		"drift.wav",
+		"petals.wav",
+		"stephen_1_nodes.wav",
+		"stephen_2_drag.wav",
+		"stephen_3_scratch.wav",
+		"stephen_4_pizz.wav"
+	].collect(folder +/+ _);
 	files.do {
 		|filename,i|
 		var playbuf = Buffer.read(s, filename);
 		s.sync(Condition());
 		dur = playbuf.duration.postln;
 		e = Buffer.alloc(s,s.sampleRate.nextPowerOfTwo.nextPowerOfTwo,9);
-		e.write("/Users/brianheim/Desktop/mu_test/bufwrite_test_%.wav".format(i), "wave", "float", leaveOpen:true);
+		e.write(folder +/+ "bufwrite_test_%.wav".format(i), "wave", "float", leaveOpen:true);
 		s.sync(Condition());
 		{
 			var recordbuf = e;

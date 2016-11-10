@@ -4,7 +4,7 @@
 7.do {
 	|index|
 	~labels = [ 'pcile25', 'pcile50', 'pcile75', 'pcile90', 'flatness', 'centroid', 'ampl', 'ampl2', 'sig.left' ];
-	~sf = SoundFile.openRead("/Users/brianheim/Desktop/mu_test/bufwrite_test_%.wav".format(index));
+	~sf = SoundFile.openRead("test_audio".resolveRelative +/+ "bufwrite_test_%.wav".format(index));
 	~sf.numChannels;
 	~sf.numFrames;
 

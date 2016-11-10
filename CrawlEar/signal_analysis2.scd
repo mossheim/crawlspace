@@ -1,9 +1,10 @@
 (
+var folder = "test_audio".resolveRelative;
 ~maxdur = 60;
 ~bs = Buffer.allocConsecutive(4, s, s.sampleRate * ~maxdur, 2);
 ~bs.do({
 	|buf, i|
-	buf.write("/Users/brianheim/Desktop/mu_test/write_test_%.wav".format(i), "wave", "float", leaveOpen:true);
+	buf.write(folder +/+ "write_test_%.wav".format(i), "wave", "float", leaveOpen:true);
 });
 SynthDef(\write_test, {
 	var sig = Saw.ar([20,21]*LFNoise0.kr(3).exprange(1,50),0.5);
@@ -24,7 +25,7 @@ OSCdef(\write_test, {
 	|msg|
 	msg.postln;
 	~bs[bufnum].close;
-	~bs[bufnum].write("/Users/brianheim/Desktop/mu_test/write_test_%.wav".format(filenum), "wave", "float", leaveOpen:true);
+	~bs[bufnum].write(folder +/+ "write_test_%.wav".format(filenum), "wave", "float", leaveOpen:true);
 	filenum = filenum + 1;
 	bufnum = 1 - bufnum;
 }, '/switch_file');
