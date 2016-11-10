@@ -194,10 +194,12 @@ SynthDef(\playbuf, {
 	[0.0170, 0.0280, 0.0426, 0.0626, 0.0876]
 ];
 ~measure_names = [\p25, \p50, \p75, \p90, \flatness, \centroid, \amp1, \amp2];
-~sigma_index = 1;
-~trigdur = 1.0;
-~initblockdur = 1.0;
-~write_path = "/Users/brianheim/Desktop/mu_test/analysis_test_writes/";
+~sigma_index = 4;
+~trigdur = 0.2;
+~initblockdur = 0.5;
+~delay_offset = 0.11;
+~write_path = "test_audio/analysis_test_writes/".resolveRelative;
+~read_path = "test_audio".resolveRelative;
 s.options.blockSize_(64);
 fork {
 	s.bootSync(Condition());
@@ -221,7 +223,7 @@ fork {
 	s.sync(Condition());
 
 	Synth(\playbuf, [\bufnum, ~playbuf, \out, ~bus_signal], s, \t);
-	Synth(\analysis, [\offset_dur, 0.1, \in_sig, ~bus_signal, \out_ansig, ~bus_anals, \out_sig, ~bus_signal, \out_ctrig, ~bus_ctrig], s, \t);
+	Synth(\analysis, [\offset_dur, ~delay_offset , \in_sig, ~bus_signal, \out_ansig, ~bus_anals, \out_sig, ~bus_signal, \out_ctrig, ~bus_ctrig], s, \t);
 
 	~num_analyses.do {
 		|i|
