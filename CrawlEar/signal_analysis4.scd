@@ -118,6 +118,7 @@ SynthDef(\thresh_trig, {
 	var deriv, thresh_trig, trig_count;
 
 	deriv = In.kr(in_sig);
+	deriv = deriv * (Sweep.kr > initblockdur);
 	thresh_trig = Trig1.kr((deriv >= thresh), trigdur);
 	// (thresh-deriv).poll(1);
 	ReplaceOut.kr(out, thresh_trig);
