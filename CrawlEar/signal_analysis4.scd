@@ -179,6 +179,7 @@ SynthDef(\segmenter, {
 SynthDef(\playbuf, {
 	arg bufnum, out;
 	var sig = PlayBuf.ar(2, bufnum, BufRateScale.ir(bufnum));
+	Poll.kr(Done.kr(sig), sig, "Buffer is done playing.");
 	ReplaceOut.ar(out, sig[0]);
 }).add;
 
