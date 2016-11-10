@@ -195,8 +195,10 @@ SynthDef(\playbuf, {
 	[0.0170, 0.0280, 0.0426, 0.0626, 0.0876]
 ];
 ~measure_names = [\p25, \p50, \p75, \p90, \flatness, \centroid, \amp1, \amp2];
-~sigma_index = 4;
-~trigdur = 0.2;
+~sigma_index = 1;
+// using 2 + drift -> 112 segs
+// using 1 + drift ->
+~trigdur = 0.25;
 ~initblockdur = 0.5;
 ~delay_offset = 0.11;
 ~write_path = "test_audio/analysis_test_writes/".resolveRelative;
@@ -209,7 +211,7 @@ fork {
 	~playbuf.free;
 	~recordbufs.do(_.free);
 
-	~playbuf = Buffer.read(s,~read_path +/+ "stephen_4_pizz.wav");
+	~playbuf = Buffer.read(s,~read_path +/+ "drift.wav");
 	~recordbufs = Buffer.allocConsecutive(2, s, ~max_seg_dur * s.sampleRate, 1);
 
 	// create buses
