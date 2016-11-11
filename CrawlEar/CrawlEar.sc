@@ -8,6 +8,7 @@ CrawlEar {
 	classvar <blocksize = 256;
 	classvar <max_seg_dur = 60.0;
 	classvar <analyses;
+	classvar <hpf = 50.0;
 
 	var <server;
 	var <writepath;
