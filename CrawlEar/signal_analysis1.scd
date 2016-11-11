@@ -30,6 +30,9 @@ var buf = b;
 }.scope;
 )
 
+// this hunk of code analyzes the files in test_audio/input and places
+// the result in test_audio/output. the analyses are exactly the same
+// as those used in CrawlEar.sc to ensure conformance.
 
 (
 s.options.sampleRate_(48000);
