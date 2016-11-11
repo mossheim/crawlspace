@@ -35,6 +35,7 @@ CrawlEar {
 				[\amp2, {arg chain; Amplitude.kr(sig, 0.25, 0.3)}, [0.0170, 0.0280, 0.0426, 0.0626, 0.0876]]
 			];
 
+
 			this.registerSynthDefs();
 		}
 	}
