@@ -147,6 +147,6 @@ CrawlEar {
 
 	outln {
 		arg o;
-		println(o);
+		postln(o);
 	}
 }
