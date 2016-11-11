@@ -7,11 +7,11 @@ CrawlEar {
 	classvar <sr = 96000;
 	classvar <blocksize = 256;
 	classvar <max_seg_dur = 60.0;
+	classvar <analyses;
 
 	var <server;
 	var <writepath;
 	var <nch;
-	var analyses;
 
 	*new {
 		arg server, writepath, nch;
@@ -20,7 +20,7 @@ CrawlEar {
 
 	pr_init {
 		// [name, analysis function, [thresholds (2, 2.5, 3, 3.5, 4 sigma)]]
-		analyses = [
+		this.class.analyses = [
 				[\p25, {arg chain; SpecPcile.kr(chain, 0.25, 1).log2}, [0.3387, 0.5089, 0.7383, 1.0627, 1.3348]],
 				[\p50, {arg chain; SpecPcile.kr(chain, 0.50, 1).log2}, [0.3026, 0.5065, 0.8059, 1.1154, 1.4638]],
 				[\p75, {arg chain; SpecPcile.kr(chain, 0.75, 1).log2}, [0.2755, 0.5576, 0.9134, 1.1951, 1.4450]],
