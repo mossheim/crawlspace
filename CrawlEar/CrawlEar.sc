@@ -1,4 +1,13 @@
 CrawlEar {
+	classvar <smoother_width = 3;
+	classvar <segment_trigger_osc_path = '/segment_trigger';
+	classvar <segment_master_trigger_osc_path = '/segment_master_trigger';
+	classvar <segment_info_osc_path = '/segment_info';
+	classvar <fftsize = 2048;
+	classvar <sr = 96000;
+	classvar <blocksize = 256;
+	classvar <max_seg_dur = 60.0;
+
 	var <server;
 	var <writepath;
 	var <nch;
@@ -45,7 +54,7 @@ CrawlEar {
 
 			mean = read.sum/3;
 			ReplaceOut.kr(out, mean);
-		}, nil, [~smooth_width]).add;
+		}, nil, [this.class.smoother_width]).add;
 
 		SynthDef(\deriv_calc, {
 			arg in_sig, in_trig, out;
@@ -99,11 +108,11 @@ CrawlEar {
 			arg maxdur, trigdur, bufnum, in_sig, in_threshtrigs, trig_source_en = #[1,1,1,1,1,1,1,1];
 			var trigsigs, phase, trig_master, trig_counts, trig_master_count, bufindex, delaysig;
 
-			if(trig_source_en.size != ~num_analyses) {
+			if(trig_source_en.size != analyses.size) {
 				Error("segmenter synthdef: num analysis sigs is not equal to trig source enable size").throw;
 			};
 
-			trigsigs = In.kr(in_threshtrigs, ~num_analyses);
+			trigsigs = In.kr(in_threshtrigs, analyses.size);
 			trigsigs = trigsigs * trig_source_en;
 
 			trig_master = Trig1.kr(trigsigs.sum, trigdur);
@@ -117,13 +126,13 @@ CrawlEar {
 			BufWr.ar(delaysig, bufnum+bufindex, phase);
 
 			// osc outputs
-			~num_analyses.do {
+			analyses.size.do {
 				|i|
-				SendReply.kr(trigsigs[i], ~segment_trigger_osc_path, [i, trig_counts[i], phase]);
+				SendReply.kr(trigsigs[i], segment_trigger_osc_path, [i, trig_counts[i], phase]);
 			};
-			SendReply.kr(trig_master, ~segment_master_trigger_osc_path, [phase]++trigsigs++trig_counts++[trig_master_count, 1-bufindex]);
+			SendReply.kr(trig_master, segment_master_trigger_osc_path, [phase]++trigsigs++trig_counts++[trig_master_count, 1-bufindex]);
 			//SendReply.kr(Impulse.kr(1), ~segment_info_osc_path, trigsigs);
-		}, nil, [~max_seg_dur]).add;
+		}, nil, [max_seg_dur]).add;
 
 		SynthDef(\playbuf, {
 			arg bufnum, out;
