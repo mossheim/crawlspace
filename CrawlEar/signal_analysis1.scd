@@ -35,55 +35,46 @@ var buf = b;
 // as those used in CrawlEar.sc to ensure conformance.
 
 (
-s.options.sampleRate_(48000);
+s.options.sampleRate_(CrawlEar.sr);
+s.options.blockSize_(CrawlEar.blocksize);
 fork {
-	var dur, files, folder;
+	var dur, files, output_folder, input_folder, analyses;
 	s.bootSync(Condition());
-	folder = "test_audio".resolveRelative;
-	files = [
-		"bach_stereo_96_normalized.wav",
-		"drift.wav",
-		"petals.wav",
-		"stephen_1_nodes.wav",
-		"stephen_2_drag.wav",
-		"stephen_3_scratch.wav",
-		"stephen_4_pizz.wav"
-	].collect(folder +/+ _);
+	output_folder = "test_audio/output".resolveRelative;
+	input_folder = "test_audio/input".resolveRelative;
+
+	files = PathName(input_folder).files;
+	analyses = CrawlEar.analyses;
+
+	SynthDef(\analyze_buffer, {
+			arg inbuf, outbuf;
+			var sig = PlayBuf.ar(inbuf.numChannels, inbuf, BufRateScale.ir(inbuf), doneAction:2);
+			var chain = FFT(LocalBuf(CrawlEar.fftsize), BHiPass.ar(sig.first, CrawlEar.hpf));
+			var stats;
+
+			stats = analyses.collect({
+				|entry|
+				var func = entry[2];
+				SynthDef.wrap(func, entry[1].if(\kr, \ar), entry[1].if(chain, sig.first));
+			});
+			stats = K2A.ar(stats) ++ [sig[0]];
+			DiskOut.ar(outbuf,stats);
+	}).add;
+
 	files.do {
 		|filename,i|
-		var playbuf = Buffer.read(s, filename);
+		var inbuf, outbuf, output_filename;
+		dur = inbuf.duration.postln;
+		inbuf = Buffer.read(s, filename),
+		outbuf = Buffer.alloc(s,s.sampleRate.nextPowerOfTwo,analyses.size + 1);
+		output_filename = output_folder +/+ PathName(filename).fileNameWithoutExtension + "_analysis.wav";
+		outbuf.write(output_filename, "wave", "float", leaveOpen:true);
 		s.sync(Condition());
-		dur = playbuf.duration.postln;
-		e = Buffer.alloc(s,s.sampleRate.nextPowerOfTwo.nextPowerOfTwo,9);
-		e.write(folder +/+ "bufwrite_test_%.wav".format(i), "wave", "float", leaveOpen:true);
-		s.sync(Condition());
-		{
-			var recordbuf = e;
-			var sig = PlayBuf.ar(playbuf.numChannels, playbuf, BufRateScale.ir(playbuf), doneAction:2);
-			var chain = FFT(LocalBuf(2048), BHiPass.ar(sig[0], 60));
-			var flatness, centroid, ampl, ampl2;
-			var pcile25, pcile50, pcile75, pcile90;
-			var stats;
-			Line.kr(0,1,dur,doneAction:2);
+		Synth(\analyze_buffer, [\inbuf, inbuf, \outbuf, outbuf]);
 
-			flatness = SpecFlatness.kr(chain);
-			centroid = SpecCentroid.kr(chain);
-			pcile25 = SpecPcile.kr(chain, 0.25, 1);
-			pcile50 = SpecPcile.kr(chain, 0.5, 1);
-			pcile75 = SpecPcile.kr(chain, 0.75, 1);
-			pcile90 = SpecPcile.kr(chain, 0.9, 1);
-			ampl = Amplitude.kr(sig[0], 0.01, 0.1);
-			ampl2 = Amplitude.kr(sig[0], 0.25, 0.3);
-
-			stats = [pcile25, pcile50, pcile75, pcile90, flatness, centroid, ampl, ampl2];
-			stats = K2A.ar(stats) ++ [sig[0]];
-			DiskOut.ar(recordbuf,stats);
-			Silent.ar(2);
-		}.play;
 		(dur+2).wait;
-		e.close;
-		e.free;
-
+		outbuf.close;
+		outbuf.free;
 	}
 }
 )
