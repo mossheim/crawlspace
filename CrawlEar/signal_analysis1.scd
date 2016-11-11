@@ -57,7 +57,7 @@ fork {
 		{
 			var recordbuf = e;
 			var sig = PlayBuf.ar(playbuf.numChannels, playbuf, BufRateScale.ir(playbuf), doneAction:2);
-			var chain = FFT(LocalBuf(4096), BHiPass.ar(sig[0], 60));
+			var chain = FFT(LocalBuf(2048), BHiPass.ar(sig[0], 60));
 			var flatness, centroid, ampl, ampl2;
 			var pcile25, pcile50, pcile75, pcile90;
 			var stats;
