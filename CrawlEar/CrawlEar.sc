@@ -43,10 +43,66 @@ CrawlEar_Analysis {
 		^this.analyses.flop[4].flop.blendAt(sigma);
 	}
 
+	*input_dir {
+		^"test_audio/input".resolveRelative;
+	}
+
+	*output_dir {
+		^"test_audio/output".resolveRelative;
+	}
+
 	// 2, 2.5, 3, 3.5, 4, 4.5
 	*sigmas {
 		sigma_data = sigma_data ? [0.954499736,0.987580669,0.997300204,0.999534742,0.999936658,0.99993204];
 		^sigma_data;
+	}
+
+	*performAnalysis {
+		var server = Server.local;
+		server.options.sampleRate_(Crawlspace.sr);
+		server.options.blockSize_(CrawlEar.blocksize);
+		fork {
+			var dur, files, analyses;
+			server.bootSync(Condition());
+
+			files = PathName(this.input_dir).files;
+			analyses = CrawlEar_Analysis.analyses;
+
+			SynthDef(\analyze_buffer, {
+				arg inbuf, outbuf;
+				var sig = PlayBuf.ar(2, inbuf, BufRateScale.ir(inbuf), doneAction:2);
+				var chain = FFT(LocalBuf(Crawlspace.fftsize), BHiPass.ar(sig, CrawlEar.hpf));
+				var stats;
+
+				stats = analyses.collect({
+					|entry|
+					var func = entry[2];
+					SynthDef.wrap(func, entry[1].if(\kr, \ar), entry[1].if(chain, sig));
+				});
+				stats = K2A.ar(stats) ++ [sig[0]];
+				DiskOut.ar(outbuf,stats);
+			}).add;
+
+			files.do {
+				|filepath,i|
+				var inbuf, outbuf, output_filename, id;
+
+				inbuf = Buffer.read(server, filepath.fullPath);
+				outbuf = Buffer.alloc(server,server.sampleRate.nextPowerOfTwo,analyses.size + 1);
+				output_filename = this.outpu_dir +/+ filepath.fileNameWithoutExtension + "_analysis.wav";
+				outbuf.write(output_filename, "wave", "float", leaveOpen:true);
+				server.sync(Condition());
+				dur = inbuf.duration;
+				format("file % (%): % seconds", filepath.fileName, i, dur.round(0.01)).postln;
+				id = Synth(\analyze_buffer, [\inbuf, inbuf.bufnum, \outbuf, outbuf.bufnum]).nodeID;
+
+				OSCFunc({
+					outbuf.close;
+					outbuf.free;
+					postln("Done: %".format(output_filename));
+				}, path:'/n_end', argTemplate:[id]).oneShot;
+			}
+		}
 	}
 }
 
@@ -56,8 +112,6 @@ CrawlEar {
 	classvar <segment_trigger_osc_path = '/segment_trigger';
 	classvar <segment_master_trigger_osc_path = '/segment_master_trigger';
 	classvar <segment_info_osc_path = '/segment_info';
-	classvar <fftsize = 1024;
-	classvar <sr = 48000;
 	classvar <blocksize = 256;
 	classvar <max_seg_dur = 60.0;
 	classvar <hpf = 50.0;
@@ -75,7 +129,7 @@ CrawlEar {
 		fork {
 			server = Server.local;
 			server.options.blockSize_(blocksize);
-			server.options.sampleRate_(sr);
+			server.options.sampleRate_(Crawlspace.sr);
 			server.bootSync(Condition());
 
 			this.registerSynthDefs();
