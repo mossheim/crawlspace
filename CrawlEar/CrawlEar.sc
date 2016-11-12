@@ -56,8 +56,8 @@ CrawlEar {
 	classvar <segment_trigger_osc_path = '/segment_trigger';
 	classvar <segment_master_trigger_osc_path = '/segment_master_trigger';
 	classvar <segment_info_osc_path = '/segment_info';
-	classvar <fftsize = 2048;
-	classvar <sr = 96000;
+	classvar <fftsize = 1024;
+	classvar <sr = 48000;
 	classvar <blocksize = 256;
 	classvar <max_seg_dur = 60.0;
 	classvar <hpf = 50.0;
