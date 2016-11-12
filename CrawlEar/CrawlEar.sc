@@ -35,14 +35,12 @@ CrawlEar_Analysis {
 
 	*analyses_threshes {
 		arg sigma;
-		switch(sigma)
-		{2} {^this.analyses.flop[4].flop[0].flop}
-		{2.5} {^this.analyses.flop[4].flop[1].flop}
-		{3} {^this.analyses.flop[4].flop[2].flop}
-		{3.5} {^this.analyses.flop[4].flop[3].flop}
-		{4} {^this.analyses.flop[4].flop[4].flop}
-		{4.5} {^this.analyses.flop[4].flop[5].flop}
-		{"no value found for sigma %".format(sigma).warn};
+		sigma = sigma - 2 * 2;
+		if(sigma < 0 || sigma > this.analyses[0][4].size) {
+			this.invalidInput(thisMethod, "sigma", sigma, "Between 0 and % inclusive.".format(this.analyses[0][4].size));
+		};
+
+		^this.analyses.flop[4].flop.blendAt(sigma);
 	}
 
 	// 2, 2.5, 3, 3.5, 4, 4.5
