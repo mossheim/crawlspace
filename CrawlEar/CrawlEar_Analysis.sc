@@ -104,4 +104,78 @@ CrawlEar_Analysis {
 			}
 		}
 	}
+
+	*pr_collectOutputData {
+		var files;
+
+		files = PathName(this.output_dir).files;
+		all_data = [];
+
+		files.do {
+			|filepath, index|
+			var sf, frame, numframes, channel_data, hopsize;
+
+			sf = SoundFile.openRead(filepath.fullPath);
+			frame = FloatArray.newClear(sf.numChannels);
+			hopsize = Crawlspace.fftsize.div(2);
+			numframes = sf.numFrames.div(hopsize);
+			channel_data = Array.fill(this.analyses.size, {FloatArray.newClear(numframes)});
+
+			numframes.do {
+				|i|
+				sf.readData(frame);
+				for(0, channel_data.size-1) {
+					|j|
+					channel_data[j][i] = frame[j];
+				};
+				if(i % 1000 == 0) {
+					postln(format("progress: file %, %\\%", index, (i/channel_data[0].size).round(0.1)));
+				};
+				sf.seek(hopsize-1, 1);
+			};
+
+			sf.close;
+			all_data = all_data.add(channel_data);
+		};
+
+		^all_data;
+	}
+
+	*pr_smooth {
+		arg arr;
+		var res, sum, n;
+
+		n = CrawlEar.smoother_width;
+		res = Array.newClear(arr.size-n+1);
+		sum = arr[0..(n-1)].sum;
+		for(0, arr.size-n-1) {
+			|i|
+			res[i] = sum/n;
+			sum = sum - arr[i] + arr[i+n];
+		};
+		res[arr.size-n] = sum/n;
+
+		^res;
+	}
+
+	*calculateSigmaThresholds {
+		var all_data = this.pr_collectOutputData();
+		var threshold_data;
+
+		all_data = all_data.flop.collect({
+			|arr,i|
+			arr = arr.reduce('++');
+			arr = this.pr_smooth(arr);
+			arr = arr.differentiate.drop(1);
+			arr = arr.abs.sort;
+			arr;
+		});
+
+		threshold_data = all_data.collect({
+			|arr,i|
+			arr[arr.size * this.sigmas];
+		});
+
+		^threshold_data;
+	}
 }
