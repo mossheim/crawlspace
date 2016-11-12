@@ -92,7 +92,7 @@ CrawlEar_Analysis {
 
 				inbuf = Buffer.read(server, filepath.fullPath);
 				outbuf = Buffer.alloc(server,server.sampleRate.nextPowerOfTwo,analyses.size);
-				output_filename = this.output_dir +/+ filepath.fileNameWithoutExtension + "_analysis.wav";
+				output_filename = this.output_dir +/+ filepath.fileNameWithoutExtension ++ "_analysis.wav";
 				outbuf.write(output_filename, "wave", "float", leaveOpen:true);
 				server.sync(Condition());
 				dur = inbuf.duration;
