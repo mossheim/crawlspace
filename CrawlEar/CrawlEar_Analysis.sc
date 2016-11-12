@@ -2,6 +2,8 @@ CrawlEar_Analysis {
 	classvar analysis_data;
 	classvar sigma_data;
 
+	const index_names = 0, index_fftUse = 1, index_funcs = 2, index_threshes = 3;
+
 	// [name, uses_fft, analysis function, [thresholds (2, 2.5, 3, 3.5, 4 sigma)]]
 	*analyses {
 		analysis_data = analysis_data ? [
@@ -18,29 +20,29 @@ CrawlEar_Analysis {
 	}
 
 	*analyses_names {
-		^this.analyses.flop[0];
+		^this.analyses.flop[index_names];
 	}
 
 	*analyses_fftUse {
-		^this.analyses.flop[1];
+		^this.analyses.flop[index_fftUse];
 	}
 
 	*analyses_funcs {
-		^this.analyses.flop[2];
+		^this.analyses.flop[index_funcs];
 	}
 
 	*analyses_allThreshes {
-		^this.analyses.flop[3];
+		^this.analyses.flop[index_threshes];
 	}
 
 	*analyses_threshes {
 		arg sigma;
 		sigma = sigma - 2 * 2;
-		if(sigma < 0 || sigma > this.analyses[0][4].size) {
-			this.invalidInput(thisMethod, "sigma", sigma, "Between 0 and % inclusive.".format(this.analyses[0][4].size));
+		if(sigma < 0 || sigma > this.analyses.first[index_threshes].size) {
+			this.invalidInput(thisMethod, "sigma", sigma, "Between 0 and % inclusive.".format(this.analyses.first[index_threshes].size));
 		};
 
-		^this.analyses.flop[4].flop.blendAt(sigma);
+		^this.analyses.flop[index_threshes].flop.blendAt(sigma);
 	}
 
 	*input_dir {
