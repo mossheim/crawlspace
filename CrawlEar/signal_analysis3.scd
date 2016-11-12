@@ -1,4 +1,4 @@
-
+// this code performs operations on written analysis data to determine approximate threshold values
 (
 ~allchs = [];
 7.do {
