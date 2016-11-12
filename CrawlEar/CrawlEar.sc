@@ -1,3 +1,30 @@
+CrawlEar_Analysis {
+	classvar analysis_data;
+	classvar sigma_data;
+
+	// [name, uses_fft, analysis function, [thresholds (2, 2.5, 3, 3.5, 4 sigma)]]
+	*analyses {
+		this.analysis_data = this.analysis_data ? [
+				[\p25, true, {arg chain; SpecPcile.kr(chain, 0.25, 1).log2}, [0.3387, 0.5089, 0.7383, 1.0627, 1.3348]],
+				[\p50, true, {arg chain; SpecPcile.kr(chain, 0.50, 1).log2}, [0.3026, 0.5065, 0.8059, 1.1154, 1.4638]],
+				[\p75, true, {arg chain; SpecPcile.kr(chain, 0.75, 1).log2}, [0.2755, 0.5576, 0.9134, 1.1951, 1.4450]],
+				[\p90, true, {arg chain; SpecPcile.kr(chain, 0.90, 1).log2}, [0.2604, 0.5157, 0.8798, 1.0468, 1.1994]],
+				[\flat, true, {arg chain; SpecFlatness.kr(chain)}, [0.0259, 0.0703, 0.1428, 0.1794, 0.1956]],
+				[\cent, true, {arg chain; SpecCentroid.kr(chain).log2}, [0.1884, 0.3558, 0.6258, 0.8133, 0.9553]],
+				[\amp1, false, {arg sig; Amplitude.kr(sig, 0.01, 0.1)}, [0.0320, 0.0551, 0.0792, 0.1111, 0.1573]],
+				[\amp2, false, {arg sig; Amplitude.kr(sig, 0.25, 0.3)}, [0.0170, 0.0280, 0.0426, 0.0626, 0.0876]]
+		];
+		^this.analysis_data;
+	}
+
+	// 2, 2.5, 3, 3.5, 4, 4.5
+	*sigmas {
+		this.sigma_data = this.sigma_data ? [0.954499736,0.987580669,0.997300204,0.999534742,0.999936658,0.99993204];
+		^this.sigma_data;
+	}
+}
+
+
 CrawlEar {
 	classvar <smoother_width = 3;
 	classvar <segment_trigger_osc_path = '/segment_trigger';
@@ -7,7 +34,6 @@ CrawlEar {
 	classvar <sr = 96000;
 	classvar <blocksize = 256;
 	classvar <max_seg_dur = 60.0;
-	classvar <analyses;
 	classvar <hpf = 50.0;
 
 	var <server;
@@ -20,24 +46,11 @@ CrawlEar {
 	}
 
 	pr_init {
-		// [name, uses_fft, analysis function, [thresholds (2, 2.5, 3, 3.5, 4 sigma)]]
-		this.class.analyses = [
-				[\p25, true, {arg chain; SpecPcile.kr(chain, 0.25, 1).log2}, [0.3387, 0.5089, 0.7383, 1.0627, 1.3348]],
-				[\p50, true, {arg chain; SpecPcile.kr(chain, 0.50, 1).log2}, [0.3026, 0.5065, 0.8059, 1.1154, 1.4638]],
-				[\p75, true, {arg chain; SpecPcile.kr(chain, 0.75, 1).log2}, [0.2755, 0.5576, 0.9134, 1.1951, 1.4450]],
-				[\p90, true, {arg chain; SpecPcile.kr(chain, 0.90, 1).log2}, [0.2604, 0.5157, 0.8798, 1.0468, 1.1994]],
-				[\flat, true, {arg chain; SpecFlatness.kr(chain)}, [0.0259, 0.0703, 0.1428, 0.1794, 0.1956]],
-				[\cent, true, {arg chain; SpecCentroid.kr(chain).log2}, [0.1884, 0.3558, 0.6258, 0.8133, 0.9553]],
-				[\amp1, false, {arg sig; Amplitude.kr(sig, 0.01, 0.1)}, [0.0320, 0.0551, 0.0792, 0.1111, 0.1573]],
-				[\amp2, false, {arg sig; Amplitude.kr(sig, 0.25, 0.3)}, [0.0170, 0.0280, 0.0426, 0.0626, 0.0876]]
-		];
-
 		fork {
 			server = Server.local;
 			server.options.blockSize_(blocksize);
 			server.options.sampleRate_(sr);
 			server.bootSync(Condition());
-
 
 			this.registerSynthDefs();
 		}
@@ -112,11 +125,11 @@ CrawlEar {
 			arg maxdur, trigdur, bufnum, in_sig, in_threshtrigs, trig_source_en = #[1,1,1,1,1,1,1,1];
 			var trigsigs, phase, trig_master, trig_counts, trig_master_count, bufindex, delaysig;
 
-			if(trig_source_en.size != analyses.size) {
+			if(trig_source_en.size != CrawlEar_Analysis.analyses.size) {
 				Error("segmenter synthdef: num analysis sigs is not equal to trig source enable size").throw;
 			};
 
-			trigsigs = In.kr(in_threshtrigs, analyses.size);
+			trigsigs = In.kr(in_threshtrigs, CrawlEar_Analysis.analyses.size);
 			trigsigs = trigsigs * trig_source_en;
 
 			trig_master = Trig1.kr(trigsigs.sum, trigdur);
@@ -130,7 +143,7 @@ CrawlEar {
 			BufWr.ar(delaysig, bufnum+bufindex, phase);
 
 			// osc outputs
-			analyses.size.do {
+			CrawlEar_Analysis.analyses.size.do {
 				|i|
 				SendReply.kr(trigsigs[i], segment_trigger_osc_path, [i, trig_counts[i], phase]);
 			};
