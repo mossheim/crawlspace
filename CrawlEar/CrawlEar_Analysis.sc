@@ -82,6 +82,7 @@ CrawlEar_Analysis {
 					SynthDef.wrap(func, entry[1].if(\kr, \ar), entry[1].if(chain, sig));
 				});
 				stats = K2A.ar(stats);
+				stats = stats * BinaryOpUGen('==', CheckBadValues.ar(stats, 0, 0), 0);
 				DiskOut.ar(outbuf,stats);
 			}).add;
 
