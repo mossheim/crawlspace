@@ -79,7 +79,7 @@ CrawlEar_Analysis {
 					var func = entry[2];
 					SynthDef.wrap(func, entry[1].if(\kr, \ar), entry[1].if(chain, sig));
 				});
-				stats = K2A.ar(stats) ++ [sig[0]];
+				stats = K2A.ar(stats);
 				DiskOut.ar(outbuf,stats);
 			}).add;
 
@@ -88,7 +88,7 @@ CrawlEar_Analysis {
 				var inbuf, outbuf, output_filename, id;
 
 				inbuf = Buffer.read(server, filepath.fullPath);
-				outbuf = Buffer.alloc(server,server.sampleRate.nextPowerOfTwo,analyses.size + 1);
+				outbuf = Buffer.alloc(server,server.sampleRate.nextPowerOfTwo,analyses.size);
 				output_filename = this.outpu_dir +/+ filepath.fileNameWithoutExtension + "_analysis.wav";
 				outbuf.write(output_filename, "wave", "float", leaveOpen:true);
 				server.sync(Condition());
