@@ -3,7 +3,7 @@
 // as those used in CrawlEar.sc to ensure conformance.
 
 (
-s.options.sampleRate_(CrawlEar.sr);
+s.options.sampleRate_(Crawlspace.sr);
 s.options.blockSize_(CrawlEar.blocksize);
 fork {
 	var dur, files, output_folder, input_folder, analyses;
@@ -17,7 +17,7 @@ fork {
 	SynthDef(\analyze_buffer, {
 		arg inbuf, outbuf;
 		var sig = PlayBuf.ar(2, inbuf, BufRateScale.ir(inbuf), doneAction:2);
-		var chain = FFT(LocalBuf(CrawlEar.fftsize), BHiPass.ar(sig, CrawlEar.hpf));
+		var chain = FFT(LocalBuf(Crawlspace.fftsize), BHiPass.ar(sig, CrawlEar.hpf));
 		var stats;
 
 		stats = analyses.collect({
