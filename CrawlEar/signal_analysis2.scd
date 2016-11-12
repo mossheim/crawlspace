@@ -1,3 +1,5 @@
+// this code tests the idea of using two alternating buffers to write segments of audio out on trigger events
+
 (
 var folder = "test_audio".resolveRelative;
 ~maxdur = 60;
