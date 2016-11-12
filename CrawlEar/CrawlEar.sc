@@ -4,7 +4,7 @@ CrawlEar_Analysis {
 
 	// [name, uses_fft, analysis function, [thresholds (2, 2.5, 3, 3.5, 4 sigma)]]
 	*analyses {
-		this.analysis_data = this.analysis_data ? [
+		analysis_data = analysis_data ? [
 				[\p25, true, {arg chain; SpecPcile.kr(chain, 0.25, 1).log2}, [0.3387, 0.5089, 0.7383, 1.0627, 1.3348]],
 				[\p50, true, {arg chain; SpecPcile.kr(chain, 0.50, 1).log2}, [0.3026, 0.5065, 0.8059, 1.1154, 1.4638]],
 				[\p75, true, {arg chain; SpecPcile.kr(chain, 0.75, 1).log2}, [0.2755, 0.5576, 0.9134, 1.1951, 1.4450]],
@@ -14,7 +14,7 @@ CrawlEar_Analysis {
 				[\amp1, false, {arg sig; Amplitude.kr(sig, 0.01, 0.1)}, [0.0320, 0.0551, 0.0792, 0.1111, 0.1573]],
 				[\amp2, false, {arg sig; Amplitude.kr(sig, 0.25, 0.3)}, [0.0170, 0.0280, 0.0426, 0.0626, 0.0876]]
 		];
-		^this.analysis_data;
+		^analysis_data;
 	}
 
 	*analyses_names {
@@ -45,8 +45,8 @@ CrawlEar_Analysis {
 
 	// 2, 2.5, 3, 3.5, 4, 4.5
 	*sigmas {
-		this.sigma_data = this.sigma_data ? [0.954499736,0.987580669,0.997300204,0.999534742,0.999936658,0.99993204];
-		^this.sigma_data;
+		sigma_data = sigma_data ? [0.954499736,0.987580669,0.997300204,0.999534742,0.999936658,0.99993204];
+		^sigma_data;
 	}
 }
 
