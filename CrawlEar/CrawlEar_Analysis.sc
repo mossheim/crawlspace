@@ -171,6 +171,7 @@ CrawlEar_Analysis {
 			arr = this.pr_smooth(arr);
 			arr = arr.differentiate.drop(1);
 			arr = arr.abs.sort;
+			"processed: %/%".format(i,all_data.size).postln;
 			arr;
 		});
 
