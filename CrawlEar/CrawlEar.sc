@@ -17,6 +17,34 @@ CrawlEar_Analysis {
 		^this.analysis_data;
 	}
 
+	*analyses_names {
+		^this.analyses.flop[0];
+	}
+
+	*analyses_fftUse {
+		^this.analyses.flop[1];
+	}
+
+	*analyses_funcs {
+		^this.analyses.flop[2];
+	}
+
+	*analyses_allThreshes {
+		^this.analyses.flop[3];
+	}
+
+	*analyses_threshes {
+		arg sigma;
+		switch(sigma)
+		{2} {^this.analyses.flop[4].flop[0].flop}
+		{2.5} {^this.analyses.flop[4].flop[1].flop}
+		{3} {^this.analyses.flop[4].flop[2].flop}
+		{3.5} {^this.analyses.flop[4].flop[3].flop}
+		{4} {^this.analyses.flop[4].flop[4].flop}
+		{4.5} {^this.analyses.flop[4].flop[5].flop}
+		{"no value found for sigma %".format(sigma).warn};
+	}
+
 	// 2, 2.5, 3, 3.5, 4, 4.5
 	*sigmas {
 		this.sigma_data = this.sigma_data ? [0.954499736,0.987580669,0.997300204,0.999534742,0.999936658,0.99993204];
