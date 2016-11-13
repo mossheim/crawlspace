@@ -85,7 +85,7 @@ CrawlEar_Analysis {
 					var func = entry[index_funcs];
 					SynthDef.wrap(func, entry[index_fftUse].if(\kr, \ar), entry[index_fftUse].if(chain, sig));
 				});
-				stats = stats * BinaryOpUGen('==', CheckBadValues.kr(stats, 0, 0), 0);
+				// stats = stats * BinaryOpUGen('==', CheckBadValues.kr(stats, 0, 0), 0);
 				stats = K2A.ar(stats);
 				DiskOut.ar(outbuf,stats);
 			}).add;
