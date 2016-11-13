@@ -121,6 +121,8 @@ CrawlEar_Analysis {
 		files.do {
 			|filepath, index|
 			var sf, frame, numframes, channel_data, hopsize;
+			var percentage_increment, next_percentage;
+			next_percentage = percentage_increment = 10;
 
 			sf = SoundFile.openRead(filepath.fullPath);
 			frame = FloatArray.newClear(sf.numChannels);
@@ -130,16 +132,24 @@ CrawlEar_Analysis {
 
 			numframes.do {
 				|i|
+
 				sf.readData(frame);
+				// if(frame.any(_.isNaN) || frame[0] == 0) {
+				// postln("ignoring bad frame: file %, index %".format(index, i));
+				// } {
 				for(0, channel_data.size-1) {
 					|j|
 					channel_data[j][i] = frame[j];
 				};
-				if(i % 1000 == 0) {
-					postln(format("progress: file %, %\\%", index, (i/channel_data[0].size).round(0.1)));
+
+				if((i/numframes*100) >= next_percentage) {
+					next_percentage = next_percentage + percentage_increment;
+					postln(format("progress: file %, %\\%", index, (i/numframes*100).round(0.1)));
 				};
 				sf.seek(hopsize-1, 1);
 			};
+
+			postln(format("progress: file %, %\\%", index, 100));
 
 			sf.close;
 			all_data = all_data.add(channel_data);
