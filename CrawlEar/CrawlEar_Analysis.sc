@@ -1,21 +1,33 @@
 CrawlEar_Analysis {
 	classvar analysis_data;
 	classvar sigma_data;
+	classvar archiveName = "analysis_data";
 
 	const index_names = 0, index_fftUse = 1, index_logUse = 2, index_funcs = 3, index_threshes = 4;
 
 	// [name, uses_fft, analysis function, [thresholds (2, 2.5, 3, 3.5, 4 sigma)]]
 	*analyses {
-		analysis_data = analysis_data ? [
-			[\p25, true, true, {arg chain; SpecPcile.kr(chain, 0.25, 1).log2}, [0.3387, 0.5089, 0.7383, 1.0627, 1.3348]],
-			[\p50, true, true, {arg chain; SpecPcile.kr(chain, 0.50, 1).log2}, [0.3026, 0.5065, 0.8059, 1.1154, 1.4638]],
-			[\p75, true, true, {arg chain; SpecPcile.kr(chain, 0.75, 1).log2}, [0.2755, 0.5576, 0.9134, 1.1951, 1.4450]],
-			[\p90, true, true, {arg chain; SpecPcile.kr(chain, 0.90, 1).log2}, [0.2604, 0.5157, 0.8798, 1.0468, 1.1994]],
-			[\flat, true, false, {arg chain; SpecFlatness.kr(chain)}, [0.0259, 0.0703, 0.1428, 0.1794, 0.1956]],
-			[\cent, true, true, {arg chain; SpecCentroid.kr(chain).log2}, [0.1884, 0.3558, 0.6258, 0.8133, 0.9553]],
-			[\amp1, false, false, {arg sig; Amplitude.kr(sig, 0.01, 0.1)}, [0.0320, 0.0551, 0.0792, 0.1111, 0.1573]],
-			[\amp2, false, false, {arg sig; Amplitude.kr(sig, 0.25, 0.3)}, [0.0170, 0.0280, 0.0426, 0.0626, 0.0876]]
-		];
+		if(analysis_data.isNil || (analysis_data!?{|x| x.first[index_threshes].isNil}?true)) {
+			var fileData, hardData;
+			hardData = [
+				[\p25, true, true, {arg chain; SpecPcile.kr(chain, 0.25, 1).log2}],
+				[\p50, true, true, {arg chain; SpecPcile.kr(chain, 0.50, 1).log2}],
+				[\p75, true, true, {arg chain; SpecPcile.kr(chain, 0.75, 1).log2}],
+				[\p90, true, true, {arg chain; SpecPcile.kr(chain, 0.90, 1).log2}],
+				[\flat, true, false, {arg chain; SpecFlatness.kr(chain)}],
+				[\cent, true, true, {arg chain; SpecCentroid.kr(chain).log2}],
+				[\amp1, false, false, {arg sig; Amplitude.kr(sig, 0.01, 0.1)}],
+				[\amp2, false, false, {arg sig; Amplitude.kr(sig, 0.25, 0.3)}]
+			];
+			if(File.exists(this.pr_dataFilename)) {
+				fileData = Object.readArchive(this.pr_dataFilename);
+				hardData = hardData.collect {
+					|arr, i|
+					arr.add(fileData[i]);
+				};
+			};
+			analysis_data = hardData;
+		};
 		^analysis_data;
 	}
 
@@ -244,5 +256,15 @@ CrawlEar_Analysis {
 		});
 
 		^threshold_data;
+	}
+
+	*pr_dataFilename {
+		^archiveName.resolveRelative;
+	}
+
+	*writeSigmaThresholds {
+		var data = this.calculateSigmaThresholds();
+		data.writeArchive(this.pr_dataFilename);
+		postln("Archive written.");
 	}
 }
