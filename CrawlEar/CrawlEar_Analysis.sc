@@ -214,6 +214,8 @@ CrawlEar_Analysis {
 			};
 		};
 
+		log0 = true;
+		nan = true;
 		while {(log0 || nan) && (j > i)} {
 			log0 = false;
 			nan = false;
@@ -238,11 +240,9 @@ CrawlEar_Analysis {
 		var all_data = this.pr_collectOutputData();
 		var threshold_data;
 
-		~test = [];
 		all_data = all_data.collect({
 			|arr,i|
 			arr = arr.reduce('++');
-			~test = ~test.add(arr);
 			arr = this.pr_smooth(arr);
 			arr = arr.differentiate.drop(1);
 			arr = arr.abs.sort;
