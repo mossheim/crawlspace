@@ -31,6 +31,27 @@ CrawlEar_Analysis {
 		^analysis_data;
 	}
 
+	// updates the threshold information after new data has been written
+	*updateAnalysisThreshes {
+		// just call analyses if there's no data loaded yet
+		if(analysis_data.isNil) {^this.analyses};
+
+		if(File.exists(this.pr_dataFilename)) {
+			fileData = Object.readArchive(this.pr_dataFilename);
+			analysis_data = analysis_data.collect {
+				|arr, i|
+				if(arr[index_threshes].isNil) {
+					arr.add(fileData[i]); // add in new data if there's no data
+				} {
+					arr[arr.size-1] = fileData[i]; // otherwise, replace it
+					arr;
+				}
+			};
+		} {
+			"no analysis data file".warn;
+		};
+		^analysis_data;
+	}
 	*analyses_names {
 		^this.analyses.flop[index_names];
 	}
