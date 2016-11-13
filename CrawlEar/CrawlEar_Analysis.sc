@@ -85,10 +85,11 @@ CrawlEar_Analysis {
 					var func = entry[2];
 					SynthDef.wrap(func, entry[1].if(\kr, \ar), entry[1].if(chain, sig));
 				});
+				stats = stats * BinaryOpUGen('==', CheckBadValues.kr(stats, 0, 0), 0);
 				stats = K2A.ar(stats);
-				stats = stats * BinaryOpUGen('==', CheckBadValues.ar(stats, 0, 0), 0);
 				DiskOut.ar(outbuf,stats);
 			}).add;
+			server.sync(Condition());
 
 			files.do {
 				|filepath,i|
@@ -152,10 +153,11 @@ CrawlEar_Analysis {
 			postln(format("progress: file %, %\\%", index, 100));
 
 			sf.close;
+			channel_data = this.pr_filterBadData(channel_data);
 			all_data = all_data.add(channel_data);
 		};
 
-		^all_data;
+		^all_data.flop;
 	}
 
 	*pr_smooth {
@@ -165,6 +167,9 @@ CrawlEar_Analysis {
 		n = CrawlEar.smoother_width;
 		res = Array.newClear(arr.size-n+1);
 		sum = arr[0..(n-1)].sum;
+		if(arr.size-n-1 < 0) {
+			^[]
+		};
 		for(0, arr.size-n-1) {
 			|i|
 			res[i] = sum/n;
@@ -205,13 +210,15 @@ CrawlEar_Analysis {
 		var all_data = this.pr_collectOutputData();
 		var threshold_data;
 
-		all_data = all_data.flop.collect({
+		~test = [];
+		all_data = all_data.collect({
 			|arr,i|
 			arr = arr.reduce('++');
+			~test = ~test.add(arr);
 			arr = this.pr_smooth(arr);
 			arr = arr.differentiate.drop(1);
 			arr = arr.abs.sort;
-			"processed: %/%".format(i,all_data.size).postln;
+			"processed: %/%".format(i+1,all_data.size).postln;
 			arr;
 		});
 
