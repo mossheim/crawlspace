@@ -182,8 +182,8 @@ CrawlEar_Analysis {
 
 	*pr_filterBadData {
 		arg channel_data;
-
-		var i = 0, j = 0; // if any channel has a 0 and uses log, or any channel has NaN, keep counting
+		var frames = channel_data.first.size;
+		var i = 0, j = frames-1; // if any channel has a 0 and uses log, or any channel has NaN, keep counting
 		var log0 = true, nan = true;
 
 		while {(log0 || nan) && (i < channel_data.first.size)} {
@@ -202,8 +202,24 @@ CrawlEar_Analysis {
 			};
 		};
 
-		"dropping %".format(i).postln;
-		^channel_data.drop(i);
+		while {(log0 || nan) && (j > i)} {
+			log0 = false;
+			nan = false;
+			this.analyses_logUse.do {
+				|bLog, chan|
+				log0 = log0 || (bLog && channel_data[chan][j] == 0);
+			};
+			this.analyses.size.do {
+				|chan|
+				nan = nan || channel_data[chan][j].isNaN;
+			};
+			if(log0 || nan) {
+				j = j - 1;
+			};
+		};
+
+		"dropping % from start, % from end".format(i+1, j+1-frames).postln;
+		^channel_data.collect({|chan| chan.drop(i+1).drop(j+1-frames)});
 	}
 
 	*calculateSigmaThresholds {
