@@ -7,8 +7,11 @@ CrawlEar_Analysis {
 
 	// [name, uses_fft, analysis function, [thresholds (2, 2.5, 3, 3.5, 4 sigma)]]
 	*analyses {
+		// try to update the analysis data if the array is nil or if no analysis data has yet been loaded
 		if(analysis_data.isNil || (analysis_data!?{|x| x.first[index_threshes].isNil}?true)) {
 			var fileData, hardData;
+
+			// hardcoded data
 			hardData = [
 				[\p25, true, true, {arg chain; SpecPcile.kr(chain, 0.25, 1).log2}],
 				[\p50, true, true, {arg chain; SpecPcile.kr(chain, 0.50, 1).log2}],
@@ -19,13 +22,18 @@ CrawlEar_Analysis {
 				[\amp1, false, false, {arg sig; Amplitude.kr(sig, 0.01, 0.1)}],
 				[\amp2, false, false, {arg sig; Amplitude.kr(sig, 0.25, 0.3)}]
 			];
+
+			// load in analysis data if a file exists
 			if(File.exists(this.pr_dataFilename)) {
 				fileData = Object.readArchive(this.pr_dataFilename);
 				hardData = hardData.collect {
 					|arr, i|
 					arr.add(fileData[i]);
 				};
-			};
+			} {
+				"no analysis data file".warn;
+			}
+
 			analysis_data = hardData;
 		};
 		^analysis_data;
@@ -52,26 +60,33 @@ CrawlEar_Analysis {
 		};
 		^analysis_data;
 	}
+
+	// gives the names of the particular analysis components
 	*analyses_names {
 		^this.analyses.flop[index_names];
 	}
 
+	// true if the analysis method uses an FFT chain as input
 	*analyses_fftUse {
 		^this.analyses.flop[index_fftUse];
 	}
 
+	// true if the analysis has an output that uses a logarithmic scale and is therefore prone to NaN outputs
 	*analyses_logUse {
 		^this.analyses.flop[index_logUse];
 	}
 
+	// provides the actual functions used for analysis, which are SynthDef.wrap'd
 	*analyses_funcs {
 		^this.analyses.flop[index_funcs];
 	}
 
+	// provides the entire set of threshold data
 	*analyses_allThreshes {
 		^this.analyses.flop[index_threshes];
 	}
 
+	// provides a set of threshold data for a specific sigma value. only certain values (2 to 4.5 by increments of 0.5) are defined; other values are interpolated linearly
 	*analyses_threshes {
 		arg sigma;
 		sigma = sigma - 2 * 2;
@@ -90,12 +105,13 @@ CrawlEar_Analysis {
 		^"test_audio/output".resolveRelative;
 	}
 
-	// 2, 2.5, 3, 3.5, 4, 4.5
+	// probability that a random variable with gaussian distribution lies in the range of +/- 2, 2.5, 3, 3.5, 4, 4.5 sigma
 	*sigmas {
 		sigma_data = sigma_data ? [0.954499736,0.987580669,0.997300204,0.999534742,0.999936658,0.999993204];
 		^sigma_data;
 	}
 
+	// run an analysis on all files in the input_dir
 	*performAnalysis {
 		var server = Server.local;
 		server.options.sampleRate_(Crawlspace.sr);
@@ -118,7 +134,6 @@ CrawlEar_Analysis {
 					var func = entry[index_funcs];
 					SynthDef.wrap(func, entry[index_fftUse].if(\kr, \ar), entry[index_fftUse].if(chain, sig));
 				});
-				// stats = stats * BinaryOpUGen('==', CheckBadValues.kr(stats, 0, 0), 0);
 				stats = K2A.ar(stats);
 				DiskOut.ar(outbuf,stats);
 			}).add;
@@ -146,6 +161,7 @@ CrawlEar_Analysis {
 		}
 	}
 
+	// helper method for calculateSigmaThresholds. gathers the necessary data from the files in output_dir after running performAnalysis
 	*pr_collectOutputData {
 		var files, all_data;
 
@@ -193,6 +209,7 @@ CrawlEar_Analysis {
 		^all_data.flop;
 	}
 
+	// helper method for calculateSigmaThresholds
 	*pr_smooth {
 		arg arr;
 		var res, sum, n;
@@ -213,6 +230,8 @@ CrawlEar_Analysis {
 		^res;
 	}
 
+	// helper method for calculateSigmaThresholds
+	// gets rid of bad data frames that are not useful for analysis but produced normally by the analysis functions. usually caused by a completely silent input signal
 	*pr_filterBadData {
 		arg channel_data;
 		var frames = channel_data.first.size;
@@ -257,6 +276,7 @@ CrawlEar_Analysis {
 		^channel_data.collect({|chan| chan.drop(i+1).drop(j+1-frames)});
 	}
 
+	// calculate the derivative thresholds used by CrawlEar to splice live input
 	*calculateSigmaThresholds {
 		var all_data = this.pr_collectOutputData();
 		var threshold_data;
@@ -283,6 +303,7 @@ CrawlEar_Analysis {
 		^archiveName.resolveRelative;
 	}
 
+	// calculate sigma thresholds and write them to an archive file to be loaded later. avoids directly handling data
 	*writeSigmaThresholds {
 		var data = this.calculateSigmaThresholds();
 		data.writeArchive(this.pr_dataFilename);
