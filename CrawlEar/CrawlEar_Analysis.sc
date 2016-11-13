@@ -175,6 +175,32 @@ CrawlEar_Analysis {
 		^res;
 	}
 
+	*pr_filterBadData {
+		arg channel_data;
+
+		var i = 0, j = 0; // if any channel has a 0 and uses log, or any channel has NaN, keep counting
+		var log0 = true, nan = true;
+
+		while {(log0 || nan) && (i < channel_data.first.size)} {
+			log0 = false;
+			nan = false;
+			this.analyses_logUse.do {
+				|bLog, chan|
+				log0 = log0 || (bLog && channel_data[chan][i] == 0);
+			};
+			this.analyses.size.do {
+				|chan|
+				nan = nan || channel_data[chan][i].isNaN;
+			};
+			if(log0 || nan) {
+				i = i + 1;
+			};
+		};
+
+		"dropping %".format(i).postln;
+		^channel_data.drop(i);
+	}
+
 	*calculateSigmaThresholds {
 		var all_data = this.pr_collectOutputData();
 		var threshold_data;
