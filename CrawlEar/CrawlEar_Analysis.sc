@@ -314,4 +314,26 @@ CrawlEar_Analysis {
 		data.writeArchive(this.pr_dataFilename);
 		postln("Archive written.");
 	}
+
+	*fullAnalysis {
+		fork {
+			var conditions;
+			postln("----CrawlEar_Analysis.fullAnalysis----");
+			postln("\tSTARTING ANALYSIS");
+			postln("\t-----------------");
+			conditions = this.performAnalysis;
+
+			postln("");
+			postln("\tWAITING TO COMPLETE");
+			postln("\t-------------------");
+			while {conditions.every(_.test).not} {1.wait};
+
+			postln("");
+			postln("\tCALCULATING THRESHOLDS");
+			postln("\t----------------------");
+			this.writeSigmaThresholds();
+
+			postln("----------------Done------------------");
+		}
+	}
 }
