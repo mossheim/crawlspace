@@ -118,13 +118,13 @@ CrawlEar_Analysis {
 	// run an analysis on all files in the input_dir
 	*performAnalysis {
 		var server = Server.local;
+		var files = PathName(this.input_dir).files;
+		var completion_conditions = Array.fill(files.size, Condition(false));
 		server.options.sampleRate_(Crawlspace.sr);
 		server.options.blockSize_(CrawlEar.blocksize);
 		fork {
-			var dur, files, analyses;
+			var dur, analyses;
 			server.bootSync(Condition());
-
-			files = PathName(this.input_dir).files;
 			analyses = CrawlEar_Analysis.analyses;
 
 			SynthDef(\analyze_buffer, {
@@ -145,7 +145,7 @@ CrawlEar_Analysis {
 
 			files.do {
 				|filepath,i|
-				var inbuf, outbuf, output_filename, id;
+				var inbuf, outbuf, output_filename, id, completion_condition;
 
 				inbuf = Buffer.read(server, filepath.fullPath);
 				outbuf = Buffer.alloc(server,server.sampleRate.nextPowerOfTwo,analyses.size);
@@ -155,14 +155,19 @@ CrawlEar_Analysis {
 				dur = inbuf.duration;
 				format("file % (%): % seconds", filepath.fileName, i, dur.round(0.01)).postln;
 				id = Synth(\analyze_buffer, [\inbuf, inbuf.bufnum, \outbuf, outbuf.bufnum]).nodeID;
+				completion_condition = Condition();
+				completion_conditions.add(completion_condition);
 
 				OSCFunc({
 					outbuf.close;
 					outbuf.free;
+					completion_condition.test_(true);
 					postln("Done: %".format(output_filename));
 				}, path:'/n_end', argTemplate:[id]).oneShot;
 			}
 		}
+
+		^completion_conditions;
 	}
 
 	// helper method for calculateSigmaThresholds. gathers the necessary data from the files in output_dir after running performAnalysis
