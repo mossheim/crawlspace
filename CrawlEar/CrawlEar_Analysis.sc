@@ -94,7 +94,7 @@ CrawlEar_Analysis {
 			this.invalidInput(thisMethod, "sigma", sigma, "Between 0 and % inclusive.".format(this.analyses.first[index_threshes].size));
 		};
 
-		^this.analyses.flop[index_threshes].flop.blendAt(sigma);
+		^this.analyses_allThreshes.flop.blendAt(sigma);
 	}
 
 	*input_dir {
