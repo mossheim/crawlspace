@@ -123,7 +123,7 @@ CrawlEar_Analysis {
 		server.options.sampleRate_(Crawlspace.sr);
 		server.options.blockSize_(CrawlEar.blocksize);
 		fork {
-			var dur, analyses;
+			var analyses;
 			server.bootSync(Condition());
 			analyses = CrawlEar_Analysis.analyses;
 
@@ -145,7 +145,7 @@ CrawlEar_Analysis {
 
 			files.do {
 				|filepath,i|
-				var inbuf, outbuf, output_filename, id, completion_condition;
+				var inbuf, outbuf, dur, output_filename, id, completion_condition;
 
 				inbuf = Buffer.read(server, filepath.fullPath);
 				outbuf = Buffer.alloc(server,server.sampleRate.nextPowerOfTwo,analyses.size);
