@@ -25,14 +25,14 @@ CrawlEar_Analysis {
 
 			// load in analysis data if a file exists
 			if(File.exists(this.pr_dataFilename)) {
-				fileData = Object.readArchive(this.pr_dataFilename);
+				var fileData = Object.readArchive(this.pr_dataFilename);
 				hardData = hardData.collect {
 					|arr, i|
 					arr.add(fileData[i]);
 				};
 			} {
 				"no analysis data file".warn;
-			}
+			};
 
 			analysis_data = hardData;
 		};
@@ -45,7 +45,7 @@ CrawlEar_Analysis {
 		if(analysis_data.isNil) {^this.analyses};
 
 		if(File.exists(this.pr_dataFilename)) {
-			fileData = Object.readArchive(this.pr_dataFilename);
+			var fileData = Object.readArchive(this.pr_dataFilename);
 			analysis_data = analysis_data.collect {
 				|arr, i|
 				if(arr[index_threshes].isNil) {
