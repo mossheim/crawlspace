@@ -105,6 +105,10 @@ CrawlEar_Analysis {
 		^"test_audio/output".resolveRelative;
 	}
 
+	*pr_dataFilename {
+		^archiveName.resolveRelative;
+	}
+
 	// probability that a random variable with gaussian distribution lies in the range of +/- 2, 2.5, 3, 3.5, 4, 4.5 sigma
 	*sigmas {
 		sigma_data = sigma_data ? [0.954499736,0.987580669,0.997300204,0.999534742,0.999936658,0.999993204];
@@ -297,10 +301,6 @@ CrawlEar_Analysis {
 		});
 
 		^threshold_data;
-	}
-
-	*pr_dataFilename {
-		^archiveName.resolveRelative;
 	}
 
 	// calculate sigma thresholds and write them to an archive file to be loaded later. avoids directly handling data
