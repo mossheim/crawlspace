@@ -74,23 +74,17 @@ CrawlEar {
 		}, nil).add;
 
 		SynthDef(\analysis, {
-			arg offset_dur, in_sig, out_ansig, out_sig, out_ctrig;
+			arg offset_dur, in_sig, out_stats, out_sig, out_ctrig;
 
 			var sig = In.ar(in_sig);
 			var chain = FFT(LocalBuf(4096), BHiPass.ar(sig, 60));
 			var ctrig = chain > 0;
-			var ansigs = [
-				SpecPcile.kr(chain, 0.25, 1).log2,
-				SpecPcile.kr(chain, 0.50, 1).log2,
-				SpecPcile.kr(chain, 0.75, 1).log2,
-				SpecPcile.kr(chain, 0.90, 1).log2,
-				SpecFlatness.kr(chain),
-				SpecCentroid.kr(chain).log2,
-				Amplitude.kr(sig, 0.01, 0.1),
-				Amplitude.kr(sig, 0.25, 0.3)
-			];
+			var stats = CrawlEar_Analysis.analyses.collect({
+					|entry,i|
+				SynthDef.wrap(CrawlEar_Analysis.analyses_funcs[i], CrawlEar_Analysis.analyses_fftUse[i].if(\kr, \ar), CrawlEar_Analysis.analyses_fftUse[i].if(chain, sig));
+				});
 
-			ReplaceOut.kr(out_ansig, ansigs);
+			ReplaceOut.kr(out_stats, stats);
 			ReplaceOut.kr(out_ctrig, ctrig);
 			ReplaceOut.ar(out_sig, DelayN.ar(sig, offset_dur, offset_dur));
 		}, nil).add;
