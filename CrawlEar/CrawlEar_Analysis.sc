@@ -127,9 +127,11 @@ CrawlEar_Analysis {
 		fork {
 			var analyses;
 
+			// setup server
 			server.bootSync(Condition());
 			analyses = CrawlEar_Analysis.analyses;
 
+			// setup analysis synthdef
 			SynthDef(\analyze_buffer, {
 				arg inbuf, outbuf;
 				var sig = PlayBuf.ar(2, inbuf, BufRateScale.ir(inbuf), doneAction:2);
@@ -146,10 +148,12 @@ CrawlEar_Analysis {
 			}).add;
 			server.sync(Condition());
 
+			// process each file
 			files.do {
 				|filepath,i|
 				var inbuf, outbuf, dur, outputFilename, id;
 
+				// set up buffers
 				inbuf = Buffer.read(server, filepath.fullPath);
 				outbuf = Buffer.alloc(server,server.sampleRate.nextPowerOfTwo,analyses.size);
 				outputFilename = this.outputDir +/+ filepath.fileNameWithoutExtension ++ "_analysis.wav";
@@ -157,8 +161,10 @@ CrawlEar_Analysis {
 				server.sync(Condition());
 				dur = inbuf.duration;
 				format("file % (%): % seconds", filepath.fileName, i, dur.round(0.01)).postln;
+				// create synth
 				id = Synth(\analyze_buffer, [\inbuf, inbuf.bufnum, \outbuf, outbuf.bufnum]).nodeID;
 
+				// listen for completion and mark condition true when done
 				OSCFunc({
 					outbuf.close;
 					outbuf.free;
