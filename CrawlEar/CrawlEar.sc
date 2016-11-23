@@ -31,13 +31,13 @@ CrawlEar {
 		// smooths by calculating the average of the previous nsamps samples collected when triggered by trigsig
 		SynthDef(\n_samp_smoother, {
 			arg nsamps, in_sig, in_trig, out;
-			var ansig, trigsig, buf, count, write, read, mean;
+			var stat, trigsig, buf, count, write, read, mean;
 
 			buf = LocalBuf(nsamps);
-			ansig = In.kr(in_sig);
+			stat = In.kr(in_sig);
 			trigsig = In.kr(in_trig);
 			count = Stepper.kr(trigsig, 0, 0, nsamps-1);
-			write = Dbufwr(ansig, buf, count);
+			write = Dbufwr(stat, buf, count);
 			read = Demand.kr(trigsig, 0, Dbufrd(buf, [0,1,2]));
 			Demand.kr(trigsig, 0, write);
 
