@@ -120,6 +120,7 @@ CrawlEar_Analysis {
 		var server = Server.local;
 		var files = PathName(this.inputDir).files;
 		var completionConditions = Array.fill(files.size, Condition(false));
+		var synthName = 'analyzeBuffer'
 
 
 		fork {
@@ -129,7 +130,7 @@ CrawlEar_Analysis {
 			server.bootSync(Condition());
 
 			// setup analysis synthdef
-			SynthDef(\analyze_buffer, {
+			SynthDef(synthName, {
 				arg inbuf, outbuf;
 				var sig = PlayBuf.ar(2, inbuf, BufRateScale.ir(inbuf), doneAction:2);
 				var chain = FFT(LocalBuf(Crawlspace.fftsize), BHiPass.ar(sig, CrawlEar.hpf));
@@ -158,7 +159,7 @@ CrawlEar_Analysis {
 
 				// create synth
 				format("file % (%): % seconds", filepath.fileName, i, inbuf.duration.round(0.01)).postln;
-				id = Synth(\analyze_buffer, [\inbuf, inbuf.bufnum, \outbuf, outbuf.bufnum]).nodeID;
+				id = Synth(synthName, [\inbuf, inbuf.bufnum, \outbuf, outbuf.bufnum]).nodeID;
 
 				// listen for completion and mark condition true when done
 				OSCFunc({
@@ -175,10 +176,10 @@ CrawlEar_Analysis {
 
 	// helper method for calculateSigmaThresholds. gathers the necessary data from the files in outputDir after running performAnalysis
 	*pr_collectOutputData {
-		var files, all_data;
+		var files, allData;
 
 		files = PathName(this.outputDir).files;
-		all_data = [];
+		allData = [];
 
 		files.do {
 			|filepath, index|
@@ -215,10 +216,10 @@ CrawlEar_Analysis {
 
 			sf.close;
 			channel_data = this.pr_filterBadData(channel_data);
-			all_data = all_data.add(channel_data);
+			allData = allData.add(channel_data);
 		};
 
-		^all_data.flop;
+		^allData.flop;
 	}
 
 	// helper method for calculateSigmaThresholds
@@ -290,25 +291,25 @@ CrawlEar_Analysis {
 
 	// calculate the derivative thresholds used by CrawlEar to splice live input
 	*calculateSigmaThresholds {
-		var all_data = this.pr_collectOutputData();
-		var threshold_data;
+		var allData = this.pr_collectOutputData();
+		var thresholdData;
 
-		all_data = all_data.collect({
+		allData = allData.collect({
 			|arr,i|
 			arr = arr.reduce('++');
 			arr = this.pr_smooth(arr);
 			arr = arr.differentiate.drop(1);
 			arr = arr.abs.sort;
-			"processed: %/%".format(i+1,all_data.size).postln;
+			"processed: %/%".format(i+1,allData.size).postln;
 			arr;
 		});
 
-		threshold_data = all_data.collect({
+		thresholdData = allData.collect({
 			|arr,i|
 			arr[arr.size * this.sigmas];
 		});
 
-		^threshold_data;
+		^thresholdData;
 	}
 
 	// calculate sigma thresholds and write them to an archive file to be loaded later. avoids directly handling data
