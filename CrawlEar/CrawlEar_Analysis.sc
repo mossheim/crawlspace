@@ -120,8 +120,7 @@ CrawlEar_Analysis {
 		var server = Server.local;
 		var files = PathName(this.inputDir).files;
 		var completionConditions = Array.fill(files.size, Condition(false));
-		var synthName = 'analyzeBuffer'
-
+		var synthName = 'analyzeBuffer';
 
 		fork {
 			// setup server
