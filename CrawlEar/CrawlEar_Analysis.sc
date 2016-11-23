@@ -121,15 +121,12 @@ CrawlEar_Analysis {
 		var files = PathName(this.inputDir).files;
 		var completionConditions = Array.fill(files.size, Condition(false));
 
-		server.options.sampleRate_(Crawlspace.sr);
-		server.options.blockSize_(CrawlEar.blocksize);
 
 		fork {
-			var analyses;
-
 			// setup server
+			server.options.sampleRate_(Crawlspace.sr);
+			server.options.blockSize_(CrawlEar.blocksize);
 			server.bootSync(Condition());
-			analyses = CrawlEar_Analysis.analyses;
 
 			// setup analysis synthdef
 			SynthDef(\analyze_buffer, {
@@ -138,10 +135,9 @@ CrawlEar_Analysis {
 				var chain = FFT(LocalBuf(Crawlspace.fftsize), BHiPass.ar(sig, CrawlEar.hpf));
 				var stats;
 
-				stats = analyses.collect({
+				stats = this.analyses.collect({
 					|entry|
-					var func = entry[index_funcs];
-					SynthDef.wrap(func, entry[index_fftUse].if(\kr, \ar), entry[index_fftUse].if(chain, sig));
+					SynthDef.wrap(entry[index_funcs], entry[index_fftUse].if(\kr, \ar), entry[index_fftUse].if(chain, sig));
 				});
 				stats = K2A.ar(stats);
 				DiskOut.ar(outbuf,stats);
@@ -151,17 +147,17 @@ CrawlEar_Analysis {
 			// process each file
 			files.do {
 				|filepath,i|
-				var inbuf, outbuf, dur, outputFilename, id;
+				var inbuf, outbuf, outputFilename, id;
 
 				// set up buffers
 				inbuf = Buffer.read(server, filepath.fullPath);
-				outbuf = Buffer.alloc(server,server.sampleRate.nextPowerOfTwo,analyses.size);
+				outbuf = Buffer.alloc(server,server.sampleRate.nextPowerOfTwo,this.analyses.size);
 				outputFilename = this.outputDir +/+ filepath.fileNameWithoutExtension ++ "_analysis.wav";
 				outbuf.write(outputFilename, "wave", "float", leaveOpen:true);
 				server.sync(Condition());
-				dur = inbuf.duration;
-				format("file % (%): % seconds", filepath.fileName, i, dur.round(0.01)).postln;
+
 				// create synth
+				format("file % (%): % seconds", filepath.fileName, i, inbuf.duration.round(0.01)).postln;
 				id = Synth(\analyze_buffer, [\inbuf, inbuf.bufnum, \outbuf, outbuf.bufnum]).nodeID;
 
 				// listen for completion and mark condition true when done
