@@ -3,7 +3,7 @@ CrawlEar_Analysis {
 	classvar sigmaData;
 	classvar archiveName = "analysis_data";
 
-	const index_names = 0, index_fftUse = 1, index_logUse = 2, index_funcs = 3, index_threshes = 4;
+	const <index_names = 0, <index_fftUse = 1, <index_logUse = 2, <index_funcs = 3, <index_threshes = 4;
 
 	// [name, uses_fft, analysis function, [thresholds (2, 2.5, 3, 3.5, 4 sigma)]]
 	*analyses {
