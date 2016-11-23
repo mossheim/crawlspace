@@ -120,10 +120,13 @@ CrawlEar_Analysis {
 		var server = Server.local;
 		var files = PathName(this.input_dir).files;
 		var completion_conditions = Array.fill(files.size, Condition(false));
+
 		server.options.sampleRate_(Crawlspace.sr);
 		server.options.blockSize_(CrawlEar.blocksize);
+
 		fork {
 			var analyses;
+
 			server.bootSync(Condition());
 			analyses = CrawlEar_Analysis.analyses;
 
@@ -145,7 +148,7 @@ CrawlEar_Analysis {
 
 			files.do {
 				|filepath,i|
-				var inbuf, outbuf, dur, output_filename, id, completion_condition;
+				var inbuf, outbuf, dur, output_filename, id;
 
 				inbuf = Buffer.read(server, filepath.fullPath);
 				outbuf = Buffer.alloc(server,server.sampleRate.nextPowerOfTwo,analyses.size);
@@ -155,13 +158,11 @@ CrawlEar_Analysis {
 				dur = inbuf.duration;
 				format("file % (%): % seconds", filepath.fileName, i, dur.round(0.01)).postln;
 				id = Synth(\analyze_buffer, [\inbuf, inbuf.bufnum, \outbuf, outbuf.bufnum]).nodeID;
-				completion_condition = Condition();
-				completion_conditions.add(completion_condition);
 
 				OSCFunc({
 					outbuf.close;
 					outbuf.free;
-					completion_condition.test_(true);
+					completion_conditions[i].test_(true);
 					postln("Done: %".format(output_filename));
 				}, path:'/n_end', argTemplate:[id]).oneShot;
 			}
