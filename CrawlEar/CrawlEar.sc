@@ -1,10 +1,10 @@
 CrawlEar {
-	classvar <smoother_width = 3;
-	classvar <segment_trigger_osc_path = '/segment_trigger';
-	classvar <segment_master_trigger_osc_path = '/segment_master_trigger';
-	classvar <segment_info_osc_path = '/segment_info';
+	classvar <smootherWidth = 3;
+	classvar <segmentTriggerOscPath = '/segment_trigger';
+	classvar <segmentMasterTriggerOscPath = '/segment_master_trigger';
+	classvar <segmentInfoOscPath = '/segment_info';
 	classvar <blocksize = 256;
-	classvar <max_seg_dur = 60.0;
+	classvar <maxSegDur = 60.0;
 	classvar <hpf = 50.0;
 
 	var <server;
@@ -42,7 +42,7 @@ CrawlEar {
 
 			mean = read.sum/3;
 			ReplaceOut.kr(out, mean);
-		}, nil, [this.class.smoother_width]).add;
+		}, nil, [this.class.smootherWidth]).add;
 
 		SynthDef(\deriv_calc, {
 			arg in_sig, in_trig, out;
@@ -116,11 +116,11 @@ CrawlEar {
 			// osc outputs
 			CrawlEar_Analysis.analyses.size.do {
 				|i|
-				SendReply.kr(trigsigs[i], segment_trigger_osc_path, [i, trig_counts[i], phase]);
+				SendReply.kr(trigsigs[i], segmentTriggerOscPath, [i, trig_counts[i], phase]);
 			};
-			SendReply.kr(trig_master, segment_master_trigger_osc_path, [phase]++trigsigs++trig_counts++[trig_master_count, 1-bufindex]);
-			//SendReply.kr(Impulse.kr(1), ~segment_info_osc_path, trigsigs);
-		}, nil, [max_seg_dur]).add;
+			SendReply.kr(trig_master, segmentMasterTriggerOscPath, [phase]++trigsigs++trig_counts++[trig_master_count, 1-bufindex]);
+			//SendReply.kr(Impulse.kr(1), ~segmentInfoOscPath, trigsigs);
+		}, nil, [maxSegDur]).add;
 
 		SynthDef(\playbuf, {
 			arg bufnum, out;
