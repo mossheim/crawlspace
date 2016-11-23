@@ -42,6 +42,7 @@ CrawlEar {
 			Demand.kr(trigsig, 0, write);
 
 			mean = read.sum/3;
+			mean = read.sum/nsamps;
 			ReplaceOut.kr(out, mean);
 		}, nil, [this.class.smootherWidth]).add;
 
