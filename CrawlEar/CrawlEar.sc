@@ -28,6 +28,7 @@ CrawlEar {
 	}
 
 	registerSynthDefs {
+		// smooths by calculating the average of the previous nsamps samples collected when triggered by trigsig
 		SynthDef(\n_samp_smoother, {
 			arg nsamps, in_sig, in_trig, out;
 			var ansig, trigsig, buf, count, write, read, mean;
@@ -44,6 +45,7 @@ CrawlEar {
 			ReplaceOut.kr(out, mean);
 		}, nil, [this.class.smootherWidth]).add;
 
+		// calculate the abs value of the derivative of the signal
 		SynthDef(\deriv_calc, {
 			arg in_sig, in_trig, out;
 			var buf, mean, prevmean, deriv, trigsig, count;
@@ -59,6 +61,7 @@ CrawlEar {
 			ReplaceOut.kr(out, deriv);
 		}, nil).add;
 
+		// output a trigger signal when the input signal is greater than thresh. ignore multiple triggers within the duration trigdur
 		SynthDef(\thresh_trig, {
 			arg thresh, trigdur, initblockdur, in_sig, out;
 			var deriv, thresh_trig, trig_count;
@@ -92,6 +95,8 @@ CrawlEar {
 			ReplaceOut.ar(out_sig, DelayN.ar(sig, offset_dur, offset_dur));
 		}, nil).add;
 
+		// sends trigger messages to client to create new audio files.
+		// in other words, uses analysis trigger signals to delimit the incoming audio stream.
 		SynthDef(\segmenter, {
 			arg maxdur, trigdur, bufnum, in_sig, in_threshtrigs, trig_source_en = #[1,1,1,1,1,1,1,1];
 			var trigsigs, phase, trig_master, trig_counts, trig_master_count, bufindex, delaysig;
