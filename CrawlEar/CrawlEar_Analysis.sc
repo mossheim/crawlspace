@@ -1,6 +1,6 @@
 CrawlEar_Analysis {
-	classvar analysis_data;
-	classvar sigma_data;
+	classvar analysisData;
+	classvar sigmaData;
 	classvar archiveName = "analysis_data";
 
 	const index_names = 0, index_fftUse = 1, index_logUse = 2, index_funcs = 3, index_threshes = 4;
@@ -8,7 +8,7 @@ CrawlEar_Analysis {
 	// [name, uses_fft, analysis function, [thresholds (2, 2.5, 3, 3.5, 4 sigma)]]
 	*analyses {
 		// try to update the analysis data if the array is nil or if no analysis data has yet been loaded
-		if(analysis_data.isNil || (analysis_data!?{|x| x.first[index_threshes].isNil}?true)) {
+		if(analysisData.isNil || (analysisData!?{|x| x.first[index_threshes].isNil}?true)) {
 			var fileData, hardData;
 
 			// hardcoded data
@@ -34,19 +34,19 @@ CrawlEar_Analysis {
 				"no analysis data file".warn;
 			};
 
-			analysis_data = hardData;
+			analysisData = hardData;
 		};
-		^analysis_data;
+		^analysisData;
 	}
 
 	// updates the threshold information after new data has been written
 	*updateAnalysisThreshes {
 		// just call analyses if there's no data loaded yet
-		if(analysis_data.isNil) {^this.analyses};
+		if(analysisData.isNil) {^this.analyses};
 
 		if(File.exists(this.pr_dataFilename)) {
 			var fileData = Object.readArchive(this.pr_dataFilename);
-			analysis_data = analysis_data.collect {
+			analysisData = analysisData.collect {
 				|arr, i|
 				if(arr[index_threshes].isNil) {
 					arr.add(fileData[i]); // add in new data if there's no data
@@ -58,7 +58,7 @@ CrawlEar_Analysis {
 		} {
 			"no analysis data file".warn;
 		};
-		^analysis_data;
+		^analysisData;
 	}
 
 	// gives the names of the particular analysis components
@@ -97,11 +97,11 @@ CrawlEar_Analysis {
 		^this.analyses_allThreshes.flop.blendAt(sigma);
 	}
 
-	*input_dir {
+	*inputDir {
 		^"test_audio/input".resolveRelative;
 	}
 
-	*output_dir {
+	*outputDir {
 		^"test_audio/output".resolveRelative;
 	}
 
@@ -111,15 +111,15 @@ CrawlEar_Analysis {
 
 	// probability that a random variable with gaussian distribution lies in the range of +/- 2, 2.5, 3, 3.5, 4, 4.5 sigma
 	*sigmas {
-		sigma_data = sigma_data ? [0.954499736,0.987580669,0.997300204,0.999534742,0.999936658,0.999993204];
-		^sigma_data;
+		sigmaData = sigmaData ? [0.954499736,0.987580669,0.997300204,0.999534742,0.999936658,0.999993204];
+		^sigmaData;
 	}
 
-	// run an analysis on all files in the input_dir
+	// run an analysis on all files in the inputDir
 	*performAnalysis {
 		var server = Server.local;
-		var files = PathName(this.input_dir).files;
-		var completion_conditions = Array.fill(files.size, Condition(false));
+		var files = PathName(this.inputDir).files;
+		var completionConditions = Array.fill(files.size, Condition(false));
 
 		server.options.sampleRate_(Crawlspace.sr);
 		server.options.blockSize_(CrawlEar.blocksize);
@@ -148,12 +148,12 @@ CrawlEar_Analysis {
 
 			files.do {
 				|filepath,i|
-				var inbuf, outbuf, dur, output_filename, id;
+				var inbuf, outbuf, dur, outputFilename, id;
 
 				inbuf = Buffer.read(server, filepath.fullPath);
 				outbuf = Buffer.alloc(server,server.sampleRate.nextPowerOfTwo,analyses.size);
-				output_filename = this.output_dir +/+ filepath.fileNameWithoutExtension ++ "_analysis.wav";
-				outbuf.write(output_filename, "wave", "float", leaveOpen:true);
+				outputFilename = this.outputDir +/+ filepath.fileNameWithoutExtension ++ "_analysis.wav";
+				outbuf.write(outputFilename, "wave", "float", leaveOpen:true);
 				server.sync(Condition());
 				dur = inbuf.duration;
 				format("file % (%): % seconds", filepath.fileName, i, dur.round(0.01)).postln;
@@ -162,20 +162,20 @@ CrawlEar_Analysis {
 				OSCFunc({
 					outbuf.close;
 					outbuf.free;
-					completion_conditions[i].test_(true);
-					postln("Done: %".format(output_filename));
+					completionConditions[i].test_(true);
+					postln("Done: %".format(outputFilename));
 				}, path:'/n_end', argTemplate:[id]).oneShot;
 			}
 		}
 
-		^completion_conditions;
+		^completionConditions;
 	}
 
-	// helper method for calculateSigmaThresholds. gathers the necessary data from the files in output_dir after running performAnalysis
+	// helper method for calculateSigmaThresholds. gathers the necessary data from the files in outputDir after running performAnalysis
 	*pr_collectOutputData {
 		var files, all_data;
 
-		files = PathName(this.output_dir).files;
+		files = PathName(this.outputDir).files;
 		all_data = [];
 
 		files.do {
@@ -319,19 +319,19 @@ CrawlEar_Analysis {
 	*fullAnalysis {
 		fork {
 			var conditions;
-			postln("----CrawlEar_Analysis.fullAnalysis----");
+			postln("----CrawlEar_Analysis.fullAnalysis----\n");
 			postln("\tSTARTING ANALYSIS");
-			postln("\t-----------------");
+			postln("\t-----------------\n");
 			conditions = this.performAnalysis;
 
 			postln("");
 			postln("\tWAITING TO COMPLETE");
-			postln("\t-------------------");
+			postln("\t-------------------\n");
 			while {conditions.every(_.test).not} {1.wait};
 
 			postln("");
 			postln("\tCALCULATING THRESHOLDS");
-			postln("\t----------------------");
+			postln("\t----------------------\n");
 			this.writeSigmaThresholds();
 
 			postln("----------------Done------------------");
