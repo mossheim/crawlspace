@@ -157,7 +157,7 @@ CrawlEar_Analysis {
 				server.sync(Condition());
 
 				// create synth
-				format("file % (%): % seconds", filepath.fileName, i, inbuf.duration.round(0.01)).postln;
+				this.outln(format("file % (%): % seconds", filepath.fileName, i, inbuf.duration.round(0.01)));
 				id = Synth(synthName, [\inbuf, inbuf.bufnum, \outbuf, outbuf.bufnum]).nodeID;
 
 				// listen for completion and mark condition true when done
@@ -165,7 +165,7 @@ CrawlEar_Analysis {
 					outbuf.close;
 					outbuf.free;
 					completionConditions[i].test_(true);
-					postln("Done: %".format(outputFilename));
+					this.outln("Done: %".format(outputFilename));
 				}, path:'/n_end', argTemplate:[id]).oneShot;
 			}
 		}
@@ -197,7 +197,7 @@ CrawlEar_Analysis {
 
 				sf.readData(frame);
 				// if(frame.any(_.isNaN) || frame[0] == 0) {
-				// postln("ignoring bad frame: file %, index %".format(index, i));
+				// this.outln("ignoring bad frame: file %, index %".format(index, i));
 				// } {
 				for(0, channel_data.size-1) {
 					|j|
@@ -206,12 +206,12 @@ CrawlEar_Analysis {
 
 				if((i/numframes*100) >= next_percentage) {
 					next_percentage = next_percentage + percentage_increment;
-					postln(format("progress: file %, %\\%", index, (i/numframes*100).round(0.1)));
+					this.outln(format("progress: file %, %\\%", index, (i/numframes*100).round(0.1)));
 				};
 				sf.seek(hopsize-1, 1);
 			};
 
-			postln(format("progress: file %, %\\%", index, 100));
+			this.outln(format("progress: file %, %\\%", index, 100));
 
 			sf.close;
 			channel_data = this.pr_filterBadData(channel_data);
@@ -284,7 +284,7 @@ CrawlEar_Analysis {
 			};
 		};
 
-		"dropping % from start, % from end".format(i+1, j+1-frames).postln;
+		this.outln("dropping % from start, % from end".format(i+1, j+1-frames));
 		^channel_data.collect({|chan| chan.drop(i+1).drop(j+1-frames)});
 	}
 
@@ -299,7 +299,7 @@ CrawlEar_Analysis {
 			arr = this.pr_smooth(arr);
 			arr = arr.differentiate.drop(1);
 			arr = arr.abs.sort;
-			"processed: %/%".format(i+1,allData.size).postln;
+			this.outln("processed: %/%".format(i+1,allData.size));
 			arr;
 		});
 
@@ -315,28 +315,33 @@ CrawlEar_Analysis {
 	*writeSigmaThresholds {
 		var data = this.calculateSigmaThresholds();
 		data.writeArchive(this.pr_dataFilename);
-		postln("Archive written.");
+		this.outln("Archive written.");
 	}
 
 	*fullAnalysis {
 		fork {
 			var conditions;
-			postln("----CrawlEar_Analysis.fullAnalysis----\n");
-			postln("\tSTARTING ANALYSIS");
-			postln("\t-----------------\n");
+			this.outln("----CrawlEar_Analysis.fullAnalysis----\n");
+			this.outln("\tSTARTING ANALYSIS");
+			this.outln("\t-----------------\n");
 			conditions = this.performAnalysis;
 
-			postln("");
-			postln("\tWAITING TO COMPLETE");
-			postln("\t-------------------\n");
+			this.outln("");
+			this.outln("\tWAITING TO COMPLETE");
+			this.outln("\t-------------------\n");
 			while {conditions.every(_.test).not} {1.wait};
 
-			postln("");
-			postln("\tCALCULATING THRESHOLDS");
-			postln("\t----------------------\n");
+			this.outln("");
+			this.outln("\tCALCULATING THRESHOLDS");
+			this.outln("\t----------------------\n");
 			this.writeSigmaThresholds();
 
-			postln("----------------Done------------------");
+			this.outln("----------------Done------------------");
 		}
+	}
+
+	*outln {
+		arg o;
+		postln(o);
 	}
 }
