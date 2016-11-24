@@ -5,17 +5,17 @@ Crawlspace {
 	var <server;
 	var <earPath, <mapPath, <painterPath;
 	var <inChs, <outChs;
-	var <dur;
+	var <tDur;
 
 
 	*new {
-		arg server, earPath, mapPath, painterPath, inChs, outChs, dur;
-		^super.newCopyArgs(server, earPath, mapPath, painterPath, inChs, outChs, dur).pr_init;
+		arg server, earPath, mapPath, painterPath, inChs, outChs, tDur;
+		^super.newCopyArgs(server, earPath, mapPath, painterPath, inChs, outChs, tDur).pr_init;
 	}
 
 	pr_init {
 		CrawlEar.new(server, earPath, inChs);
-		CrawlMapper.new(mapPath, asInteger(dur * sr), outChs);
+		CrawlMapper.new(mapPath, tDur, outChs);
 		// CrawlSamplePainter.new(painterPath, asInteger(dur * sr), outChs);
 	}
 }
