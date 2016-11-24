@@ -248,38 +248,25 @@ CrawlEar_Analysis {
 		arg channel_data;
 		var frames = channel_data.first.size;
 		var i = 0, j = frames-1; // if any channel has a 0 and uses log, or any channel has NaN, keep counting
-		var log0 = true, nan = true;
+		var bBadVals = true;
 
-		while {(log0 || nan) && (i < channel_data.first.size)} {
-			log0 = false;
-			nan = false;
-			this.analyses_logUse.do {
+		while {bBadVals && (i < frames)} {
+			bBadVals = this.analyses_logUse.any {
 				|bLog, chan|
-				log0 = log0 || (bLog && channel_data[chan][i] == 0);
+				(bLog && (channel_data[chan][i] == 0)) || channel_data[chan][i].isNaN;
 			};
-			this.analyses.size.do {
-				|chan|
-				nan = nan || channel_data[chan][i].isNaN;
-			};
-			if(log0 || nan) {
+			if(bBadVals) {
 				i = i + 1;
 			};
 		};
 
-		log0 = true;
-		nan = true;
-		while {(log0 || nan) && (j > i)} {
-			log0 = false;
-			nan = false;
-			this.analyses_logUse.do {
+		bBadVals = true;
+		while {bBadVals && (j > i)} {
+			bBadVals = this.analyses_logUse.any {
 				|bLog, chan|
-				log0 = log0 || (bLog && channel_data[chan][j] == 0);
+				(bLog && (channel_data[chan][i] == 0)) || channel_data[chan][i].isNaN;
 			};
-			this.analyses.size.do {
-				|chan|
-				nan = nan || channel_data[chan][j].isNaN;
-			};
-			if(log0 || nan) {
+			if(bBadVals) {
 				j = j - 1;
 			};
 		};
