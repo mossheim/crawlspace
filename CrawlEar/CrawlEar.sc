@@ -9,11 +9,11 @@ CrawlEar {
 
 	var <server;
 	var <writepath;
-	var <nch;
+	var <nChs;
 
 	*new {
-		arg server, writepath, nch;
-		^super.newCopyArgs(server, writepath, nch).pr_init;
+		arg server, writepath, nChs;
+		^super.newCopyArgs(server, writepath, nChs).pr_init;
 	}
 
 	pr_init {
