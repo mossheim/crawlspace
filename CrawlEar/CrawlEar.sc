@@ -1,35 +1,35 @@
 CrawlEar {
 	classvar <smootherWidth = 3;
-	classvar <segmentTriggerOscPath = '/segmentTrigger';
-	classvar <segmentMasterTriggerOscPath = '/segmentMasterTrigger';
-	classvar <segmentInfoOscPath = '/segmentInfo';
+	classvar <segmentTriggerOscPath = '/segment_trigger';
+	classvar <segmentMasterTriggerOscPath = '/segment_master_trigger';
+	classvar <segmentInfoOscPath = '/segment_info';
 	classvar <blocksize = 256;
 	classvar <maxSegDur = 60.0;
 	classvar <hpf = 50.0;
 
 	var <server;
 	var <writepath;
-	var <nch;
+	var <nChs;
 
 	*new {
-		arg server, writepath, nch;
-		^super.newCopyArgs(server, writepath, nch).pr_init;
+		arg server, writepath, nChs;
+		^super.newCopyArgs(server, writepath, nChs).pr_init;
 	}
 
 	pr_init {
 		fork {
+			server = Server.local;
 			server.options.blockSize_(blocksize);
 			server.options.sampleRate_(Crawlspace.sr);
 			server.bootSync(Condition());
 
 			this.registerSynthDefs();
-			server.sync(Condition());
 		}
 	}
 
 	registerSynthDefs {
 		// smooths by calculating the average of the previous nsamps samples collected when triggered by trigsig
-		SynthDef(\nSampSmoother, {
+		SynthDef(\n_samp_smoother, {
 			arg nsamps, in_sig, in_trig, out;
 			var stat, trigsig, buf, count, write, read, mean;
 
@@ -46,7 +46,7 @@ CrawlEar {
 		}, nil, [this.class.smootherWidth]).add;
 
 		// calculate the abs value of the derivative of the signal
-		SynthDef(\derivCalc, {
+		SynthDef(\deriv_calc, {
 			arg in_sig, in_trig, out;
 			var buf, mean, prevmean, deriv, trigsig, count;
 
@@ -62,7 +62,7 @@ CrawlEar {
 		}, nil).add;
 
 		// output a trigger signal when the input signal is greater than thresh. ignore multiple triggers within the duration trigdur
-		SynthDef(\threshTrig, {
+		SynthDef(\thresh_trig, {
 			arg thresh, trigdur, initblockdur, in_sig, out;
 			var deriv, thresh_trig, trig_count;
 
@@ -74,10 +74,10 @@ CrawlEar {
 		}, nil).add;
 
 		SynthDef(\analysis, {
-			arg offsetDur, in_sig, out_stats, out_sig, out_ctrig;
+			arg offset_dur, in_sig, out_stats, out_sig, out_ctrig;
 
 			var sig = In.ar(in_sig);
-			var chain = FFT(LocalBuf(4096), BHiPass.ar(sig, hpf));
+			var chain = FFT(LocalBuf(4096), BHiPass.ar(sig, 60));
 			var ctrig = chain > 0;
 			var stats = CrawlEar_Analysis.analyses.collect({
 					|entry,i|
@@ -86,7 +86,7 @@ CrawlEar {
 
 			ReplaceOut.kr(out_stats, stats);
 			ReplaceOut.kr(out_ctrig, ctrig);
-			ReplaceOut.ar(out_sig, DelayN.ar(sig, offsetDur, offsetDur));
+			ReplaceOut.ar(out_sig, DelayN.ar(sig, offset_dur, offset_dur));
 		}, nil).add;
 
 		// sends trigger messages to client to create new audio files.
