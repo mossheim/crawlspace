@@ -18,12 +18,12 @@ CrawlEar {
 
 	pr_init {
 		fork {
-			server = Server.local;
 			server.options.blockSize_(blocksize);
 			server.options.sampleRate_(Crawlspace.sr);
 			server.bootSync(Condition());
 
 			this.registerSynthDefs();
+			server.sync(Condition());
 		}
 	}
 
@@ -77,7 +77,7 @@ CrawlEar {
 			arg offsetDur, in_sig, out_stats, out_sig, out_ctrig;
 
 			var sig = In.ar(in_sig);
-			var chain = FFT(LocalBuf(4096), BHiPass.ar(sig, 60));
+			var chain = FFT(LocalBuf(4096), BHiPass.ar(sig, hpf));
 			var ctrig = chain > 0;
 			var stats = CrawlEar_Analysis.analyses.collect({
 					|entry,i|
