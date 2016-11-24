@@ -15,7 +15,7 @@ Crawlspace {
 
 	pr_init {
 		CrawlEar.new(server, earPath, inChs);
-		CrawlMapper.new(mapPath, outChs);
+		CrawlMapper.new(mapPath, asInteger(dur * sr), outChs);
 		// CrawlSamplePainter.new(painterPath, asInteger(dur * sr), outChs);
 	}
 }
