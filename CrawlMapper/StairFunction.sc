@@ -60,6 +60,13 @@ StairFunction {
 			Error("remove: position not found").throw;
 		}
 	}
+
+	removeAt {
+		arg index;
+		if(index < 0 || index >= stepCount) {
+			Error("index out of range").throw;
+		}
+	}
 }
 
 // a "stair" or "terraced" function with an integer interval domain
