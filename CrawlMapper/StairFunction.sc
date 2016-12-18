@@ -97,8 +97,14 @@ DiscreteStairFunction : StairFunction {
 
 	pr_init {
 		arg leftBound, rightBound, minStepGap;
+		if(leftBound >= rightBound) {
+			Error("leftBound must be strictly less than rightBound").throw;
+		};
 		this.leftBound = leftBound;
 		this.rightBound = rightBound;
+		if(minStepGap <= 0) {
+			Error("minStepGap must be at least 1").throw;
+		};
 		this.minStepGap = minStepGap;
 	}
 
