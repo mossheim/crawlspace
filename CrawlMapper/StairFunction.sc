@@ -81,6 +81,20 @@ StairFunction {
 }
 
 // a "stair" or "terraced" function with an integer interval domain
-DiscreteStairFunction : StairFunction{
+DiscreteStairFunction : StairFunction {
+	var <leftBound, <rightBound, <minStepGap;
+
+	*new {
+		arg startValue = 0, leftBound = 0, rightBound, minStepGap = 1;
+		super.new(startValue).pr_init(leftBound, rightBound, minStepGap);
+	}
+
+	pr_init {
+		arg leftBound, rightBound, minStepGap;
+		this.leftBound = leftBound;
+		this.rightBound = rightBound;
+		this.minStepGap = minStepGap;
+	}
+
 
 }
