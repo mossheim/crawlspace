@@ -20,6 +20,12 @@ StairFunction {
 		this.stepDirections = stepDirections;
 		this.sortSteps();
 	}
+
+	sortSteps {
+		var order = stepPositions.order;
+		stepPositions = stepPositions[order];
+		stepDirections = stepDirections[order];
+	}
 }
 
 // a "stair" or "terraced" function with an integer interval domain
