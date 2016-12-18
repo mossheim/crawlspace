@@ -49,6 +49,17 @@ StairFunction {
 		this.sortSteps();
 		stepCount = stepCount + poss.size;
 	}
+
+	remove {
+		arg pos;
+		var index = stepPositions.indexOf(pos);
+		if(index!=nil) {
+			stepPositions.removeAt(index);
+			stepDirections.removeAt(index);
+		} {
+			Error("remove: position not found").throw;
+		}
+	}
 }
 
 // a "stair" or "terraced" function with an integer interval domain
