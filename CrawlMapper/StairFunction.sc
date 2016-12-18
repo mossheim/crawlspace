@@ -3,12 +3,12 @@ StairFunction {
 	var <>startValue, <stepPositions, <stepDirections, <stepCount;
 
 	*new {
-		arg startValue, stepPositions = [], stepDirections = [];
+		arg startValue = 0, stepPositions = [], stepDirections = [];
 		^super.new.pr_init(startValue, stepPositions, stepDirections);
 	}
 
 	pr_init {
-		arg startValue, stepPositions = [], stepDirections = [];
+		arg startValue, stepPositions, stepDirections;
 		if(stepPositions.isKindOf(Array).not) {
 			Error("stepPositions must be an Array").throw;
 		};
