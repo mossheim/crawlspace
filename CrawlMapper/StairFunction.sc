@@ -68,7 +68,7 @@ StairFunction {
 	heightAt {
 		arg x;
 		var i = 0, value = startValue;
-		while(i < stepPositions.size) {
+		while {i < stepPositions.size} {
 			var pos, dir;
 			pos = stepPositions[i];
 			if(pos > x) {^value};
