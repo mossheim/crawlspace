@@ -1,6 +1,6 @@
 // a "stair" or "terraced" function - leftwise step function where the difference between contiguous plateaus is constant. represented as a list of positions and step directions
 StairFunction {
-	var <>startValue, <stepPositions, <stepDirections;
+	var <>startValue, <stepPositions, <stepDirections, <stepCount;
 
 	*new {
 		arg startValue, stepPositions = [], stepDirections = [];
@@ -15,9 +15,13 @@ StairFunction {
 		if(stepDirections.isKindOf(Array).not) {
 			Error("stepDirections must be an Array").throw;
 		};
+		if(stepDirections.size != stepPositions.size) {
+			Error("stepPositions and stepDirections must be the same size").throw;
+		};
 		this.startValue = startValue;
 		this.stepPositions = stepPositions;
 		this.stepDirections = stepDirections;
+		stepCount = stepPositions.size;
 		this.sortSteps();
 	}
 
@@ -32,13 +36,18 @@ StairFunction {
 		stepPositions = stepPositions.add(pos);
 		stepDirections = stepDirections.add(dir);
 		this.sortSteps();
+		stepCount = stepCount + 1;
 	}
 
 	addAll {
 		arg poss, dirs;
-		stepPositions.addAll(poss);
-		stepDirections.addAll(dirs);
+		if(poss.size != dirs.size) {
+			Error("stepPositions and stepDirections must be the same size").throw;
+		};
+		stepPositions = stepPositions.addAll(poss);
+		stepDirections = stepDirections.addAll(dirs);
 		this.sortSteps();
+		stepCount = stepCount + poss.size;
 	}
 }
 
