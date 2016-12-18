@@ -88,7 +88,7 @@ StairFunction {
 
 // a "stair" or "terraced" function with an integer interval domain
 DiscreteStairFunction : StairFunction {
-	var <leftBound, <rightBound, <minStepGap;
+	var <leftBound, <rightBound, <minStepGap, emptyIntervals;
 
 	*new {
 		arg startValue = 0, leftBound = 0, rightBound, minStepGap = 1;
