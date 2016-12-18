@@ -24,6 +24,9 @@ StairFunction {
 
 	add {
 		arg pos, dir;
+		if(stepPositions.includes(pos)) {
+			Error("add: requested step position already occupied").throw;
+		};
 		stepPositions = stepPositions.add(pos);
 		stepDirections = stepDirections.add(dir);
 		this.sortSteps();
@@ -35,6 +38,9 @@ StairFunction {
 		if(poss.size != dirs.size) {
 			Error("stepPositions and stepDirections must be the same size").throw;
 		};
+		if(stepPositions.includesAny(poss)) {
+			Error("addAll: sets must be disjoint. Common elements: %".format(stepPositions.sect(poss))).throw;
+		}
 		stepPositions = stepPositions.addAll(poss);
 		stepDirections = stepDirections.addAll(dirs);
 		this.sortSteps();
