@@ -73,6 +73,19 @@ StairFunction {
 		stepDirections = [];
 		stepCount = 0;
 	}
+
+	heightAt {
+		arg x;
+		var i = 0, value = startValue;
+		while(i < stepPositions.size) {
+			var pos, dir;
+			pos = stepPositions[i];
+			if(pos > x) {^value};
+			dir = stepDirections[i];
+			value = value + dir.sign;
+			i = i+1;
+		}
+	}
 }
 
 // a "stair" or "terraced" function with an integer interval domain
