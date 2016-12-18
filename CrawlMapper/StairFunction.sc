@@ -3,25 +3,16 @@ StairFunction {
 	var <>startValue, <stepPositions, <stepDirections, <stepCount;
 
 	*new {
-		arg startValue = 0, stepPositions = [], stepDirections = [];
-		^super.new.pr_init(startValue, stepPositions, stepDirections);
+		arg startValue = 0;
+		^super.new.pr_init(startValue);
 	}
 
 	pr_init {
-		arg startValue, stepPositions, stepDirections;
-		if(stepPositions.isKindOf(Array).not) {
-			Error("stepPositions must be an Array").throw;
-		};
-		if(stepDirections.isKindOf(Array).not) {
-			Error("stepDirections must be an Array").throw;
-		};
-		if(stepDirections.size != stepPositions.size) {
-			Error("stepPositions and stepDirections must be the same size").throw;
-		};
+		arg startValue;
 		this.startValue = startValue;
-		this.stepPositions = stepPositions;
-		this.stepDirections = stepDirections;
-		stepCount = stepPositions.size;
+		stepPositions = [];
+		stepDirections = [];
+		stepCount = 0;
 		this.sortSteps();
 	}
 
