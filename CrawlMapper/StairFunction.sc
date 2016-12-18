@@ -84,7 +84,8 @@ StairFunction {
 			dir = stepDirections[i];
 			value = value + dir.sign;
 			i = i+1;
-		}
+		};
+		^value;
 	}
 }
 
