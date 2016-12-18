@@ -26,6 +26,20 @@ StairFunction {
 		stepPositions = stepPositions[order];
 		stepDirections = stepDirections[order];
 	}
+
+	add {
+		arg pos, dir;
+		stepPositions = stepPositions.add(pos);
+		stepDirections = stepDirections.add(dir);
+		this.sortSteps();
+	}
+
+	addAll {
+		arg poss, dirs;
+		stepPositions.addAll(poss);
+		stepDirections.addAll(dirs);
+		this.sortSteps();
+	}
 }
 
 // a "stair" or "terraced" function with an integer interval domain
