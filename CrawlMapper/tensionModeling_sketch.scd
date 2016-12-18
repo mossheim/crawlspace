@@ -27,15 +27,15 @@
 	stair_pos;
 };
 
-18.do {
+20.do {
 	var stair1 = ~place_stair.value();
 	var stair2 = ~place_stair.value();
 	if(stair1 < stair2) {
-		~stairs[\down] = ~stairs[\down].add(stair1);
-		~stairs[\up] = ~stairs[\up].add(stair2);
+		~stairs = ~stairs.add([stair1, -1]);
+		~stairs = ~stairs.add([stair2, 1]);
 	} {
-		~stairs[\down] = ~stairs[\down].add(stair2);
-		~stairs[\up] = ~stairs[\up].add(stair1);
+		~stairs = ~stairs.add([stair2, -1]);
+		~stairs = ~stairs.add([stair1, 1]);
 	}
 };
 
@@ -43,10 +43,10 @@
 ~depth_arr = [];
 for(0, ~duration-1) {
 	|t|
-	if(~stairs[\down].includes(t)) {
+	if(~stairs.select({|stair| stair.last==(-1)}).collect(_.first).includes(t)) {
 		~curr_depth = ~curr_depth + 1;
 	};
-	if(~stairs[\up].includes(t)) {
+	if(~stairs.select({|stair| stair.last==1}).collect(_.first).includes(t)) {
 		~curr_depth = ~curr_depth - 1;
 	};
 	~depth_arr = ~depth_arr.add(~curr_depth);
