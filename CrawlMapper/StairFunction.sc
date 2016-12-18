@@ -67,6 +67,12 @@ StairFunction {
 			Error("index out of range").throw;
 		}
 	}
+
+	clear {
+		stepPositions = [];
+		stepDirections = [];
+		stepCount = 0;
+	}
 }
 
 // a "stair" or "terraced" function with an integer interval domain
