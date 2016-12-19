@@ -1,4 +1,5 @@
-// a "stair" or "terraced" function - leftwise step function where the difference between contiguous regions is 1. represented as a list of positions and step directions
+// A "stair" or "terraced" function.
+// Right-continuous step function where the difference between contiguous regions is 1. The function is represented as a list of positions and step directions.
 StairFunction {
 	var <>startValue, <stepPositions, <stepDirections, <stepCount;
 
@@ -86,7 +87,8 @@ StairFunction {
 	}
 }
 
-// a "stair" or "terraced" function with an integer interval domain
+// A "stair" or "terraced" function with an integer interval domain.
+// A minimum step gap is added to limit the distance between any two steps.
 DiscreteStairFunction : StairFunction {
 	var <leftBound, <rightBound, <minStepGap, emptyIntervals;
 
