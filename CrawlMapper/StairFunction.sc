@@ -52,18 +52,19 @@ StairFunction {
 		arg position;
 		var index = stepPositions.indexOf(position);
 		if(index!=nil) {
-			stepPositions.removeAt(index);
-			stepDirections.removeAt(index);
-		} {
-			Error("remove: position not found").throw;
+			this.removeAt(index);
+			^true;
 		}
+		^false;
 	}
 
 	removeAt {
 		arg index;
 		if(index < 0 || index >= stepCount) {
 			Error("index out of range").throw;
-		}
+		};
+		stepPositions.removeAt(index);
+		stepDirections.removeAt(index);
 	}
 
 	clear {
