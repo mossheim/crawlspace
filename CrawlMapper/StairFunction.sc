@@ -85,6 +85,14 @@ StairFunction {
 		};
 		^value;
 	}
+
+	stepAt {
+		arg i;
+		if(i < 0 || (i > stepCount)) {
+			Error("stepAt: index out of bounds");
+		};
+		^[stepPositions[i], stepDirections[i]];
+	}
 }
 
 // A "stair" or "terraced" function with an integer interval domain.
