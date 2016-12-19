@@ -14,10 +14,10 @@ StairFunction {
 		stepPositions = [];
 		stepDirections = [];
 		stepCount = 0;
-		this.sortSteps();
+		this.pr_sortSteps();
 	}
 
-	sortSteps {
+	pr_sortSteps {
 		var order = stepPositions.order;
 		stepPositions = stepPositions[order];
 		stepDirections = stepDirections[order];
@@ -30,7 +30,7 @@ StairFunction {
 		};
 		stepPositions = stepPositions.add(pos);
 		stepDirections = stepDirections.add(dir);
-		this.sortSteps();
+		this.pr_sortSteps();
 		stepCount = stepCount + 1;
 	}
 
@@ -44,7 +44,7 @@ StairFunction {
 		};
 		stepPositions = stepPositions.addAll(poss);
 		stepDirections = stepDirections.addAll(dirs);
-		this.sortSteps();
+		this.pr_sortSteps();
 		stepCount = stepCount + poss.size;
 	}
 
