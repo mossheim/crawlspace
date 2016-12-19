@@ -116,6 +116,11 @@ DiscreteStairFunction : StairFunction {
 			Error("minStepGap must be at least 1").throw;
 		};
 		this.minStepGap = minStepGap;
+		if(minStepGap > (rightBound - leftBound)) {
+			freeIntervals = [];
+		} {
+			freeIntervals = [[leftBound+minStepGap, rightBound-minStepGap]];
+		}
 	}
 
 
