@@ -123,5 +123,13 @@ DiscreteStairFunction : StairFunction {
 		}
 	}
 
+	emptySlotCount {
+		var count = 0;
+		freeIntervals.do {
+			|interval|
+			count = count + interval.last - interval.first + 1;
+		};
+		^count;
+	}
 
 }
