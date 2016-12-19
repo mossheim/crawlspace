@@ -41,7 +41,7 @@ StairFunction {
 		};
 		if(stepPositions.includesAny(poss)) {
 			Error("addAll: sets must be disjoint. Common elements: %".format(stepPositions.sect(poss))).throw;
-		}
+		};
 		stepPositions = stepPositions.addAll(poss);
 		stepDirections = stepDirections.addAll(dirs);
 		this.sortSteps();
