@@ -132,4 +132,22 @@ DiscreteStairFunction : StairFunction {
 		^count;
 	}
 
+	// get the position of the nth free slot in the function graph
+	positionAtFreeSlotIndex {
+		arg index = 0;
+		var position = 0;
+		var intervalIndex = 0;
+		if(index < 0) {
+			Error("positionAtFreeSlotIndex: index must be nonnegative");
+		};
+		while { (intervalIndex < stepCount) && (index >= 0) } {
+			var interval = freeIntervals[intervalIndex];
+			var intervalSize = interval.last - interval.first + 1;
+			if(index < intervalSize) {^interval.first + index};
+			index = index - intervalSize;
+		};
+		if(index < 0) {
+			Error("positionAtFreeSlotIndex: index exceeds number of free slots");
+		}
+	}
 }
