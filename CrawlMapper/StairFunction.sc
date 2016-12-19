@@ -24,33 +24,33 @@ StairFunction {
 	}
 
 	add {
-		arg pos, dir;
-		if(stepPositions.includes(pos)) {
+		arg position, direction;
+		if(stepPositions.includes(position)) {
 			Error("add: requested step position already occupied").throw;
 		};
-		stepPositions = stepPositions.add(pos);
-		stepDirections = stepDirections.add(dir);
+		stepPositions = stepPositions.add(position);
+		stepDirections = stepDirections.add(direction);
 		this.pr_sortSteps();
 		stepCount = stepCount + 1;
 	}
 
 	addAll {
-		arg poss, dirs;
-		if(poss.size != dirs.size) {
+		arg positions, directions;
+		if(positions.size != directions.size) {
 			Error("stepPositions and stepDirections must be the same size").throw;
 		};
-		if(stepPositions.includesAny(poss)) {
-			Error("addAll: sets must be disjoint. Common elements: %".format(stepPositions.sect(poss))).throw;
+		if(stepPositions.includesAny(positions)) {
+			Error("addAll: sets must be disjoint. Common elements: %".format(stepPositions.sect(positions))).throw;
 		};
-		stepPositions = stepPositions.addAll(poss);
-		stepDirections = stepDirections.addAll(dirs);
+		stepPositions = stepPositions.addAll(positions);
+		stepDirections = stepDirections.addAll(directions);
 		this.pr_sortSteps();
-		stepCount = stepCount + poss.size;
+		stepCount = stepCount + positions.size;
 	}
 
 	remove {
-		arg pos;
-		var index = stepPositions.indexOf(pos);
+		arg position;
+		var index = stepPositions.indexOf(position);
 		if(index!=nil) {
 			stepPositions.removeAt(index);
 			stepDirections.removeAt(index);
@@ -76,11 +76,11 @@ StairFunction {
 		arg x;
 		var i = 0, value = startValue;
 		while {i < stepPositions.size} {
-			var pos, dir;
-			pos = stepPositions[i];
-			if(pos > x) {^value};
-			dir = stepDirections[i];
-			value = value + dir.sign;
+			var position, direction;
+			position = stepPositions[i];
+			if(position > x) {^value};
+			direction = stepDirections[i];
+			value = value + direction.sign;
 			i = i+1;
 		};
 		^value;
