@@ -39,6 +39,46 @@ StairFunction_Test : UnitTest {
 			this.assertEquals(sf.stepDirections, directions[order], report:false);
 		}
 	}
+
+	test_addError {
+		// TODO
+	}
+
+	test_addAllError_badSizes {
+		// TODO
+	}
+
+	test_addAllError_overlappedSets {
+		// TODO
+	}
+
+	test_removeTrue {
+		// TODO
+	}
+
+	test_removeFalse {
+		// TODO
+	}
+
+	test_removeAt {
+		// TODO
+	}
+
+	test_removeAtError {
+		// TODO
+	}
+
+	test_clear {
+		// TODO
+	}
+
+	test_heightAt {
+		// TODO
+	}
+
+	test_stepAt {
+		// TODO
+	}
 }
 
 DiscreteStairFunction_Test : UnitTest {
