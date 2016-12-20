@@ -145,7 +145,13 @@ StairFunction_Test : UnitTest {
 	}
 
 	test_clear {
-		// TODO
+		var sf = StairFunction.new(200);
+		sf.addAll((0..100).scramble, 1!101);
+		sf.clear;
+		this.assert(sf.stepCount == 0);
+		this.assert(sf.stepPositions == []);
+		this.assert(sf.stepDirections == []);
+		this.assert(sf.startValue == 200);
 	}
 
 	test_heightAt {
