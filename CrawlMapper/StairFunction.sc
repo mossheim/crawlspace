@@ -169,4 +169,24 @@ DiscreteStairFunction : StairFunction {
 	intervalsAtDepthOfAtMost {
 		// TODO
 	}
+
+	growToHeight {
+		// TODO
+	}
+
+	growByHeight {
+		// TODO
+	}
+
+	maxHeight {
+		// TODO
+	}
+
+	minHeight {
+		// TODO
+	}
+
+	finalHeight {
+		// TODO
+	}
 }
