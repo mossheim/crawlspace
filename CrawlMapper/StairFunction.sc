@@ -95,8 +95,8 @@ StairFunction {
 
 	stepAt {
 		arg i;
-		if(i < 0 || (i > stepCount)) {
-			Error("stepAt: index out of bounds");
+		if(i < 0 || (i >= stepCount)) {
+			Error("stepAt: index out of bounds").throw;
 		};
 		^[stepPositions[i], stepDirections[i]];
 	}
