@@ -70,6 +70,7 @@ StairFunction {
 		};
 		stepPositions.removeAt(index);
 		stepDirections.removeAt(index);
+		stepCount = stepCount - 1;
 	}
 
 	clear {
