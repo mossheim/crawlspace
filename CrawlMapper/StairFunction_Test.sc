@@ -93,11 +93,19 @@ StairFunction_Test : UnitTest {
 	}
 
 	test_removeTrue {
-		// TODO
+		var sf = StairFunction.new(0);
+		var step = [2, -1];
+		sf.add(*step);
+		this.assert(sf.remove(step[0]));
+		this.assertEquals(sf.stepCount, 0);
 	}
 
 	test_removeFalse {
-		// TODO
+		var sf = StairFunction.new(0);
+		var step = [2, -1];
+		sf.add(*step);
+		this.assert(sf.remove(1).not);
+		this.assertEquals(sf.stepCount, 1);
 	}
 
 	test_removeAt {
