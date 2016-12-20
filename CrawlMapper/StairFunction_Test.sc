@@ -63,6 +63,7 @@ StairFunction_Test : UnitTest {
 
 			this.assertEquals(sf.stepPositions, positions[order]);
 			this.assertEquals(sf.stepDirections, directions[order]);
+			this.assertEquals(sf.stepCount, 50);
 		}
 	}
 
