@@ -157,4 +157,16 @@ DiscreteStairFunction : StairFunction {
 			Error("positionAtFreeSlotIndex: index exceeds number of free slots");
 		}
 	}
+
+	intervalsAtDepth {
+		// TODO
+	}
+
+	intervalsAtDepthOfAtLeast {
+		// TODO
+	}
+
+	intervalsAtDepthOfAtMost {
+		// TODO
+	}
 }
