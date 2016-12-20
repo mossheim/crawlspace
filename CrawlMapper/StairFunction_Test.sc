@@ -68,11 +68,28 @@ StairFunction_Test : UnitTest {
 	}
 
 	test_addAllError_badSizes {
-		// TODO
+		try {
+			var sf = StairFunction.new(0);
+			sf.addAll([1,2,3], [-1, 1]);
+			this.failed(thisMethod, "Using unequal position & direction array sizes should result in an error.");
+		} {
+			|e|
+			// do nothing
+		}
 	}
 
 	test_addAllError_overlappedSets {
-		// TODO
+		try {
+			var sf = StairFunction.new(0);
+			var positions = Array.fill(10, {1000.rand});
+			var directions = Array.fill(10, {[1, -1].choose});
+			sf.addAll(positions, directions);
+			sf.addAll(positions.collect(_.asFloat), directions);
+			this.failed(thisMethod, "Using overlapping sets should result in an error.");
+		} {
+			|e|
+			// do nothing
+		}
 	}
 
 	test_removeTrue {
