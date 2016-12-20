@@ -29,6 +29,9 @@ StairFunction {
 		if(stepPositions.includes(position)) {
 			Error("add: requested step position already occupied").throw;
 		};
+		if(direction == 0) {
+			Error("add: cannot add a step with direction 0").throw;
+		};
 		stepPositions = stepPositions.add(position);
 		stepDirections = stepDirections.add(direction);
 		this.pr_sortSteps();
