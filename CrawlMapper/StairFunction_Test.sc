@@ -154,8 +154,44 @@ StairFunction_Test : UnitTest {
 		this.assert(sf.startValue == 200);
 	}
 
-	test_heightAt {
-		// TODO
+	test_heightAt_1 {
+		var sf = StairFunction.new(0);
+		sf.add(0, 1);
+
+		this.assertEquals(sf.heightAt(-1), 0, "height at -1 shold be 0");
+		this.assertEquals(sf.heightAt(0), 1, "height at 0 shold be 1");
+		// remember, StairFunction is right-continuous
+		this.assertEquals(sf.heightAt(1), 1, "height at 1 should be 1");
+	}
+
+	test_heightAt_2 {
+		var sf = StairFunction.new(0);
+		var positions = (0..999);
+		var directions = Array.fill(1000, {|i| [1, -1]@@i});
+		sf.addAll(positions, directions);
+
+		1000.do {
+			|x|
+			// test on step endpoints. remember, StairFunction is right-continuous
+			this.assertEquals(sf.heightAt(x), [1, 0]@@x, report:false);
+			// test mid-step
+			this.assertEquals(sf.heightAt(x+0.5), [1, 0]@@x, report:false);
+		}
+	}
+
+	test_heightAt_3 {
+		var sf = StairFunction.new(50);
+		var positions = (0..999);
+		var directions = 1!1000;
+		sf.addAll(positions, directions);
+
+		1000.do {
+			|x|
+			// test on step endpoints. remember, StairFunction is right-continuous
+			this.assertEquals(sf.heightAt(x), x+51, report:false);
+			// test mid-step
+			this.assertEquals(sf.heightAt(x+0.5), x+51, report:false);
+		}
 	}
 
 	test_stepAt {
