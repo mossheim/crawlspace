@@ -109,11 +109,39 @@ StairFunction_Test : UnitTest {
 	}
 
 	test_removeAt {
-		// TODO
+		var sf = StairFunction.new(0);
+		sf.addAll((0..100).scramble, 1!101);
+		forBy(100, 0, -1) {
+			|i|
+			sf.removeAt(i);
+		};
+		this.assertEquals(sf.stepCount, 0);
+		this.assert(sf.stepPositions.isEmpty);
+		this.assert(sf.stepDirections.isEmpty);
 	}
 
-	test_removeAtError {
-		// TODO
+	test_removeAtError_negativeIndex {
+		try {
+			var sf = StairFunction.new(0);
+			sf.addAll((0..100).scramble, 1!101);
+			sf.removeAt(-1);
+			this.failed(thisMethod, "Index out of range should give an error.");
+		} {
+			|e|
+			// do nothing
+		}
+	}
+
+	test_removeAtError_overflowIndex {
+		try {
+			var sf = StairFunction.new(0);
+			sf.addAll((0..100).scramble, 1!101);
+			sf.removeAt(101);
+			this.failed(thisMethod, "Index out of range should give an error.");
+		} {
+			|e|
+			// do nothing
+		}
 	}
 
 	test_clear {
