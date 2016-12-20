@@ -3,18 +3,18 @@ StairFunction_Test : UnitTest {
 		var startValue = 0;
 		var sf = StairFunction.new();
 
-		this.assertEquals(sf.startValue, startValue, report:false);
-		this.assertEquals(sf.stepPositions, [], report:false);
-		this.assertEquals(sf.stepDirections, [], report:false);
+		this.assertEquals(sf.startValue, startValue);
+		this.assertEquals(sf.stepPositions, []);
+		this.assertEquals(sf.stepDirections, []);
 	}
 
 	test_init2 {
 		var startValue = -5;
 		var sf = StairFunction.new(-5);
 
-		this.assertEquals(sf.startValue, startValue, report:false);
-		this.assertEquals(sf.stepPositions, [], report:false);
-		this.assertEquals(sf.stepDirections, [], report:false);
+		this.assertEquals(sf.startValue, startValue);
+		this.assertEquals(sf.stepPositions, []);
+		this.assertEquals(sf.stepDirections, []);
 	}
 
 	test_add {
@@ -35,8 +35,8 @@ StairFunction_Test : UnitTest {
 			var order = positions.order;
 			sf.addAll(positions, directions);
 
-			this.assertEquals(sf.stepPositions, positions[order], report:false);
-			this.assertEquals(sf.stepDirections, directions[order], report:false);
+			this.assertEquals(sf.stepPositions, positions[order]);
+			this.assertEquals(sf.stepDirections, directions[order]);
 		}
 	}
 
