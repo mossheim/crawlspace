@@ -195,7 +195,37 @@ StairFunction_Test : UnitTest {
 	}
 
 	test_stepAt {
-		// TODO
+		var sf = StairFunction.new(200);
+		var order = (0..100).scramble;
+		sf.addAll((0..100)[order], (1..101)[order]);
+		100.do {
+			|x|
+			this.assertEquals(sf.stepAt(x), [x, x+1]);
+		};
+	}
+
+	test_stepAtError_negativeIndex {
+		try {
+			var sf = StairFunction.new(0);
+			sf.addAll((0..100).scramble, 1!101);
+			sf.stepAt(-1);
+			this.failed(thisMethod, "Index out of range should give an error.");
+		} {
+			|e|
+			// do nothing
+		}
+	}
+
+	test_stepAtError_overflowIndex {
+		try {
+			var sf = StairFunction.new(0);
+			sf.addAll((0..100).scramble, 1!101);
+			sf.stepAt(101);
+			this.failed(thisMethod, "Index out of range should give an error.");
+		} {
+			|e|
+			// do nothing
+		}
 	}
 }
 
