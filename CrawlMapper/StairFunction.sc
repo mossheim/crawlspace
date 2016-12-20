@@ -25,6 +25,7 @@ StairFunction {
 
 	add {
 		arg position, direction;
+		position = position.asFloat;
 		if(stepPositions.includes(position)) {
 			Error("add: requested step position already occupied").throw;
 		};
@@ -36,6 +37,7 @@ StairFunction {
 
 	addAll {
 		arg positions, directions;
+		positions = positions.collect(_.asFloat);
 		if(positions.size != directions.size) {
 			Error("stepPositions and stepDirections must be the same size").throw;
 		};
@@ -50,11 +52,11 @@ StairFunction {
 
 	remove {
 		arg position;
-		var index = stepPositions.indexOf(position);
+		var index = stepPositions.indexOf(position.asFloat);
 		if(index!=nil) {
 			this.removeAt(index);
 			^true;
-		}
+		};
 		^false;
 	}
 
