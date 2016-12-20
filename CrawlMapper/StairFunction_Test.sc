@@ -27,6 +27,32 @@ StairFunction_Test : UnitTest {
 		this.assertEquals(sf.stepDirections, [firstDir]);
 	}
 
+	test_addError_duplicate {
+		100.do {
+			try {
+				var sf = StairFunction.new(0);
+				var value = 10000.rand;
+				sf.add(value, 1);
+				sf.add(value.asFloat, -1);
+				this.failed(thisMethod, "Adding a step to an already-occupied position should result in an error.");
+			} {
+				|e|
+				// do nothing
+			}
+		}
+	}
+
+	test_addError_directionZero {
+		try {
+			var sf = StairFunction.new(0);
+			sf.add(3, 0);
+			this.failed(thisMethod, "Using unequal position & direction array sizes should result in an error.");
+		} {
+			|e|
+			// do nothing
+		}
+	}
+
 	test_addAll {
 		100.do {
 			var sf = StairFunction.new(0);
@@ -38,10 +64,6 @@ StairFunction_Test : UnitTest {
 			this.assertEquals(sf.stepPositions, positions[order]);
 			this.assertEquals(sf.stepDirections, directions[order]);
 		}
-	}
-
-	test_addError {
-		// TODO
 	}
 
 	test_addAllError_badSizes {
