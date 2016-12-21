@@ -13,6 +13,15 @@ StairFunction {
 		^stepDirectionList ? stepDirectionList = [\up, \down];
 	}
 
+	*directionValue {
+		arg direction;
+
+		^switch(direction)
+		{\up} {1}
+		{\down} {-1}
+		{0};
+	}
+
 	pr_init_stairFunction {
 		arg startValue;
 		this.startValue = startValue;
