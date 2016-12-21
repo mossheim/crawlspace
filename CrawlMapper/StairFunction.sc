@@ -140,7 +140,18 @@ StairFunction {
 	}
 
 	minHeight {
-		// TODO
+		var runningMin = startValue, height = startValue;
+
+		stepPositions.do {
+			arg position, i;
+
+			height = height + this.class.directionValue(stepDirections[i]);
+
+			if(height < runningMin)
+				{ runningMin = height };
+		};
+
+		^runningMin;
 	}
 
 	finalHeight {
