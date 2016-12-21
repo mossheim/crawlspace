@@ -79,7 +79,7 @@ StairFunction {
 	removeAt {
 		arg index;
 		if(index < 0 || index >= stepCount) {
-			Error("index out of range").throw;
+			Error("removeAt: index out of range").throw;
 		};
 		stepPositions.removeAt(index);
 		stepDirections.removeAt(index);
@@ -112,7 +112,7 @@ StairFunction {
 	stepAt {
 		arg i;
 		if(i < 0 || (i >= stepCount)) {
-			Error("stepAt: index out of bounds").throw;
+			Error("stepAt: index out of range").throw;
 		};
 		^[stepPositions[i], stepDirections[i]];
 	}
