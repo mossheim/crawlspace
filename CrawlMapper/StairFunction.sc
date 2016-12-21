@@ -110,7 +110,7 @@ DiscreteStairFunction : StairFunction {
 
 	*new {
 		arg startValue = 0, leftBound = 0, rightBound, minStepGap = 1;
-		super.new(startValue).pr_init(leftBound, rightBound, minStepGap);
+		^super.new(startValue).pr_init_discreteStairFunction(leftBound, rightBound, minStepGap);
 	}
 
 		arg leftBound, rightBound, minStepGap;
