@@ -6,6 +6,7 @@ StairFunction {
 
 	*new {
 		arg startValue = 0;
+
 		^super.new.pr_init_stairFunction(startValue);
 	}
 
@@ -24,42 +25,52 @@ StairFunction {
 
 	pr_init_stairFunction {
 		arg startValue;
+
 		this.startValue = startValue;
 		stepPositions = [];
 		stepDirections = [];
+
 		stepCount = 0;
 		this.pr_sortSteps();
 	}
 
 	pr_sortSteps {
 		var order = stepPositions.order;
+
 		stepPositions = stepPositions[order];
 		stepDirections = stepDirections[order];
 	}
 
 	pr_castPosition {
 		arg value;
+
 		^value.asFloat;
 	}
 
 	add {
 		arg position, direction;
+
 		position = this.pr_castPosition(position);
+
 		if(stepPositions.includes(position)) {
 			Error("add: requested step position already occupied").throw;
 		};
 		if(this.class.directions.includes(direction).not) {
 			Error("add: unrecognized direction symbol").throw;
 		};
+
 		stepPositions = stepPositions.add(position);
 		stepDirections = stepDirections.add(direction);
+
 		this.pr_sortSteps();
 		stepCount = stepCount + 1;
 	}
 
 	addAll {
 		arg positions, directions;
+
 		positions = positions.collect(this.pr_castPosition(_));
+
 		if(positions.size != directions.size) {
 			Error("addAll: stepPositions and stepDirections must be the same size").throw;
 		};
@@ -69,8 +80,10 @@ StairFunction {
 		if(directions.isSubsetOf(this.class.directions).not) {
 			Error("addAll: unrecognized direction symbol.").throw;
 		};
+
 		stepPositions = stepPositions.addAll(positions);
 		stepDirections = stepDirections.addAll(directions);
+
 		this.pr_sortSteps();
 		stepCount = stepCount + positions.size;
 	}
@@ -78,15 +91,18 @@ StairFunction {
 	remove {
 		arg position;
 		var index = stepPositions.indexOf(this.pr_castPosition(position));
+
 		if(index!=nil) {
 			this.removeAt(index);
 			^true;
 		};
+
 		^false;
 	}
 
 	removeAt {
 		arg index;
+
 		if(index < 0 || index >= stepCount) {
 			Error("removeAt: index out of range").throw;
 		};
@@ -113,14 +129,17 @@ StairFunction {
 
 			height = height + this.class.directionValue(stepDirections[i]);
 		};
+
 		^height;
 	}
 
 	stepAt {
 		arg i;
+
 		if(i < 0 || (i >= stepCount)) {
 			Error("stepAt: index out of range").throw;
 		};
+
 		^[stepPositions[i], stepDirections[i]];
 	}
 
@@ -166,6 +185,7 @@ DiscreteStairFunction : StairFunction {
 
 	*new {
 		arg startValue = 0, leftBound = 0, rightBound, minStepGap = 1;
+
 		^super.new(startValue).pr_init_discreteStairFunction(leftBound, rightBound, minStepGap);
 	}
 
@@ -175,12 +195,16 @@ DiscreteStairFunction : StairFunction {
 		if(leftBoundIn >= rightBoundIn) {
 			Error("leftBound must be strictly less than rightBound").throw;
 		};
+
 		leftBound = leftBoundIn;
 		rightBound = rightBoundIn;
+
 		if(minStepGapIn <= 0) {
 			Error("minStepGap must be at least 1").throw;
 		};
+
 		minStepGap = minStepGapIn;
+
 		if(minStepGap > (rightBound - leftBound)) {
 			freeIntervals = [];
 		} {
@@ -190,26 +214,30 @@ DiscreteStairFunction : StairFunction {
 
 	pr_castPosition {
 		arg value;
+
 		^value.asInteger;
 	}
 
 	emptySlotCount {
 		var count = 0;
+
 		freeIntervals.do {
 			|interval|
 			count = count + interval.last - interval.first + 1;
 		};
+
 		^count;
 	}
 
 	// get the position of the nth free slot in the function graph
 	positionAtFreeSlotIndex {
 		arg index = 0;
-		var position = 0;
-		var intervalIndex = 0;
+		var position = 0, intervalIndex = 0;
+
 		if(index < 0) {
 			Error("positionAtFreeSlotIndex: index must be nonnegative");
 		};
+
 		while { (intervalIndex < stepCount) && (index >= 0) } {
 			var interval = freeIntervals[intervalIndex];
 			var intervalSize = interval.last - interval.first + 1;
