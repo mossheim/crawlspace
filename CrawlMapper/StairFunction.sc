@@ -2,10 +2,15 @@
 // Right-continuous step function where the difference between contiguous regions is 1. The function is represented as a list of positions and step directions.
 StairFunction {
 	var <>startValue, <stepPositions, <stepDirections, <stepCount;
+	classvar stepDirectionList;
 
 	*new {
 		arg startValue = 0;
 		^super.new.pr_init_stairFunction(startValue);
+	}
+
+	*directions {
+		^stepDirectionList ? stepDirectionList = [\up, \down];
 	}
 
 	pr_init_stairFunction {
