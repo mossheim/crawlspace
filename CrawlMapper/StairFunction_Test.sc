@@ -308,6 +308,31 @@ StairFunction_Test : UnitTest {
 			this.assertEquals(sf.minHeight, -3 + startValue);
 		}
 	}
+
+	test_finalHeight {
+		[-10, 0, 10].do {
+			|startValue|
+
+			var sf = StairFunction(startValue);
+			sf.addAll((0..100).scramble, 'down'!101);
+			this.assertEquals(sf.finalHeight, -101 + startValue);
+
+			sf = StairFunction(startValue);
+			sf.addAll((0..49), ['down', 'up'].wrapExtend(50));
+			this.assertEquals(sf.finalHeight, startValue);
+
+			sf = StairFunction(startValue);
+			sf.addAll((0..9), [\up, \down, \up, \up, \down, \up, \up, \up, \down, \down]);
+			// 1 0 1 2 1 2 3 4 3 2
+			this.assertEquals(sf.finalHeight, 2 + startValue);
+
+			sf = StairFunction(startValue);
+			sf.addAll((0..9), [\down, \down, \up, \up, \down, \down, \down, \up, \up, \down]);
+			// -1 -2 -1 0 -1 -2 -3 -2 -1 -2
+			this.assertEquals(sf.finalHeight, -2 + startValue);
+		}
+	}
+
 }
 
 DiscreteStairFunction_Test : UnitTest {
