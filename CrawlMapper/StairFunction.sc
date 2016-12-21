@@ -8,7 +8,6 @@ StairFunction {
 		^super.new.pr_init_stairFunction(startValue);
 	}
 
-	pr_init {
 	pr_init_stairFunction {
 		arg startValue;
 		this.startValue = startValue;
