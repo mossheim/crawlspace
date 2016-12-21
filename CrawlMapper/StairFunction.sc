@@ -155,7 +155,7 @@ StairFunction {
 	}
 
 	finalHeight {
-		// TODO
+		^startValue + stepDirections.collect(this.class.directionValue(_));
 	}
 }
 
