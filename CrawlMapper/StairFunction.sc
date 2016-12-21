@@ -174,7 +174,7 @@ StairFunction {
 	}
 
 	finalHeight {
-		^startValue + stepDirections.collect(this.class.directionValue(_));
+		^startValue + stepDirections.sum(this.class.directionValue(_));
 	}
 }
 
