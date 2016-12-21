@@ -216,9 +216,8 @@ DiscreteStairFunction : StairFunction {
 			if(index < intervalSize) {^interval.first + index};
 			index = index - intervalSize;
 		};
-		if(index < 0) {
-			Error("positionAtFreeSlotIndex: index exceeds number of free slots");
-		}
+
+		Error("positionAtFreeSlotIndex: index exceeds number of free slots");
 	}
 
 	intervalsAtDepth {
