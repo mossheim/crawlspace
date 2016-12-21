@@ -129,17 +129,18 @@ DiscreteStairFunction : StairFunction {
 		^super.new(startValue).pr_init_discreteStairFunction(leftBound, rightBound, minStepGap);
 	}
 
-		arg leftBound, rightBound, minStepGap;
-		if(leftBound >= rightBound) {
 	pr_init_discreteStairFunction {
+		arg leftBoundIn, rightBoundIn, minStepGapIn;
+
+		if(leftBoundIn >= rightBoundIn) {
 			Error("leftBound must be strictly less than rightBound").throw;
 		};
-		this.leftBound = leftBound;
-		this.rightBound = rightBound;
-		if(minStepGap <= 0) {
+		leftBound = leftBoundIn;
+		rightBound = rightBoundIn;
+		if(minStepGapIn <= 0) {
 			Error("minStepGap must be at least 1").throw;
 		};
-		this.minStepGap = minStepGap;
+		minStepGap = minStepGapIn;
 		if(minStepGap > (rightBound - leftBound)) {
 			freeIntervals = [];
 		} {
