@@ -23,9 +23,14 @@ StairFunction {
 		stepDirections = stepDirections[order];
 	}
 
+	pr_castPosition {
+		arg value;
+		^value.asFloat;
+	}
+
 	add {
 		arg position, direction;
-		position = position.asFloat;
+		position = this.pr_castPosition(position);
 		if(stepPositions.includes(position)) {
 			Error("add: requested step position already occupied").throw;
 		};
@@ -40,7 +45,7 @@ StairFunction {
 
 	addAll {
 		arg positions, directions;
-		positions = positions.collect(_.asFloat);
+		positions = positions.collect(this.pr_castPosition(_));
 		if(positions.size != directions.size) {
 			Error("stepPositions and stepDirections must be the same size").throw;
 		};
@@ -55,7 +60,7 @@ StairFunction {
 
 	remove {
 		arg position;
-		var index = stepPositions.indexOf(position.asFloat);
+		var index = stepPositions.indexOf(this.pr_castPosition(position));
 		if(index!=nil) {
 			this.removeAt(index);
 			^true;
@@ -128,6 +133,11 @@ DiscreteStairFunction : StairFunction {
 		} {
 			freeIntervals = [[leftBound+minStepGap, rightBound-minStepGap]];
 		}
+	}
+
+	pr_castPosition {
+		arg value;
+		^value.asInteger;
 	}
 
 	emptySlotCount {
