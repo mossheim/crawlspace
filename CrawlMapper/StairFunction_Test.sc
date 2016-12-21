@@ -17,6 +17,15 @@ StairFunction_Test : UnitTest {
 		this.assertEquals(sf.stepDirections, []);
 	}
 
+	test_directions {
+		var d1 = StairFunction.directions();
+		var d2 = StairFunction.directions();
+
+		this.assert(d1 == [\up, \down], "directions array must be correct");
+		this.assert(d1 == d2, "directions arrays must be equal");
+		this.assert(d1 === d2, "directions arrays must be identical");
+	}
+
 	test_add {
 		var sf = StairFunction.new(0);
 		var firstPos = 1.0;
