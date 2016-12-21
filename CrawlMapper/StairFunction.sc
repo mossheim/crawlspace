@@ -125,7 +125,18 @@ StairFunction {
 	}
 
 	maxHeight {
-		// TODO
+		var runningMax = startValue, height = startValue;
+
+		stepPositions.do {
+			arg position, i;
+
+			height = height + this.class.directionValue(stepDirections[i]);
+
+			if(height > runningMax)
+				{ runningMax = height };
+		};
+
+		^runningMax;
 	}
 
 	minHeight {
