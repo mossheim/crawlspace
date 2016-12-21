@@ -5,10 +5,11 @@ StairFunction {
 
 	*new {
 		arg startValue = 0;
-		^super.new.pr_init(startValue);
+		^super.new.pr_init_stairFunction(startValue);
 	}
 
 	pr_init {
+	pr_init_stairFunction {
 		arg startValue;
 		this.startValue = startValue;
 		stepPositions = [];
@@ -112,9 +113,9 @@ DiscreteStairFunction : StairFunction {
 		super.new(startValue).pr_init(leftBound, rightBound, minStepGap);
 	}
 
-	pr_init {
 		arg leftBound, rightBound, minStepGap;
 		if(leftBound >= rightBound) {
+	pr_init_discreteStairFunction {
 			Error("leftBound must be strictly less than rightBound").throw;
 		};
 		this.leftBound = leftBound;
