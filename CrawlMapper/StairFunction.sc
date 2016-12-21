@@ -39,8 +39,8 @@ StairFunction {
 		if(stepPositions.includes(position)) {
 			Error("add: requested step position already occupied").throw;
 		};
-		if(direction == 0) {
-			Error("add: cannot add a step with direction 0").throw;
+		if(this.class.directions.includes(direction).not) {
+			Error("add: unrecognized direction symbol").throw;
 		};
 		stepPositions = stepPositions.add(position);
 		stepDirections = stepDirections.add(direction);
@@ -52,10 +52,13 @@ StairFunction {
 		arg positions, directions;
 		positions = positions.collect(this.pr_castPosition(_));
 		if(positions.size != directions.size) {
-			Error("stepPositions and stepDirections must be the same size").throw;
+			Error("addAll: stepPositions and stepDirections must be the same size").throw;
 		};
 		if(stepPositions.includesAny(positions)) {
 			Error("addAll: sets must be disjoint. Common elements: %".format(stepPositions.sect(positions))).throw;
+		};
+		if(directions.isSubsetOf(this.class.directions).not) {
+			Error("addAll: unrecognized direction symbol.").throw;
 		};
 		stepPositions = stepPositions.addAll(positions);
 		stepDirections = stepDirections.addAll(directions);
@@ -97,7 +100,10 @@ StairFunction {
 			position = stepPositions[i];
 			if(position > x) {^value};
 			direction = stepDirections[i];
-			value = value + direction.sign;
+			value = value + direction.switch
+			{\up} {1}
+			{\down} {-1}
+			{0};
 			i = i+1;
 		};
 		^value;
