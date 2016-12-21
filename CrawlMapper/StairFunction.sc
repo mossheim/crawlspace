@@ -105,6 +105,18 @@ StairFunction {
 		};
 		^[stepPositions[i], stepDirections[i]];
 	}
+
+	maxHeight {
+		// TODO
+	}
+
+	minHeight {
+		// TODO
+	}
+
+	finalHeight {
+		// TODO
+	}
 }
 
 // A "stair" or "terraced" function with an integer interval domain.
@@ -185,18 +197,6 @@ DiscreteStairFunction : StairFunction {
 	}
 
 	growByHeight {
-		// TODO
-	}
-
-	maxHeight {
-		// TODO
-	}
-
-	minHeight {
-		// TODO
-	}
-
-	finalHeight {
 		// TODO
 	}
 }
