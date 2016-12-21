@@ -260,6 +260,30 @@ StairFunction_Test : UnitTest {
 			// do nothing
 		}
 	}
+
+	test_maxHeight {
+		[-10, 0, 10].do {
+			|startValue|
+
+			var sf = StairFunction(startValue);
+			sf.addAll((0..100).scramble, 'up'!101);
+			this.assertEquals(sf.maxHeight, 101 + startValue);
+
+			sf = StairFunction(startValue);
+			sf.addAll((0..49), ['up', 'down'].wrapExtend(50));
+			this.assertEquals(sf.maxHeight, 1 + startValue);
+
+			sf = StairFunction(startValue);
+			sf.addAll((0..9), [\up, \down, \up, \up, \down, \up, \up, \up, \down, \down]);
+			// 1 0 1 2 1 2 3 4 3 2
+			this.assertEquals(sf.maxHeight, 4 + startValue);
+
+			sf = StairFunction(startValue);
+			sf.addAll((0..9), [\down, \down, \up, \up, \down, \down, \down, \up, \up, \down]);
+			// -1 -2 -1 0 -1 -2 -3 -2 -1 -2
+			this.assertEquals(sf.maxHeight, startValue);
+		}
+	}
 }
 
 DiscreteStairFunction_Test : UnitTest {
