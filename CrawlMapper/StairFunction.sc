@@ -103,19 +103,17 @@ StairFunction {
 
 	heightAt {
 		arg x;
-		var i = 0, value = startValue;
-		while {i < stepPositions.size} {
-			var position, direction;
-			position = stepPositions[i];
-			if(position > x) {^value};
-			direction = stepDirections[i];
-			value = value + direction.switch
-			{\up} {1}
-			{\down} {-1}
-			{0};
-			i = i+1;
+		var height = startValue;
+
+		stepPositions.do {
+			arg position, i;
+
+			if(position > x)
+			  { ^height };
+
+			height = height + this.class.directionValue(stepDirections[i]);
 		};
-		^value;
+		^height;
 	}
 
 	stepAt {
