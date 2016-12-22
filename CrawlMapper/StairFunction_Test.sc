@@ -233,7 +233,7 @@ StairFunction_Test : UnitTest {
 		sf.addAll((0..100)[order], 'up'!101);
 		100.do {
 			|x|
-			this.assertEquals(sf.stepAt(x), [x, 'up']);
+			this.assertEquals(sf.stepAt(x), [x, 'up'], report:false);
 		};
 	}
 
@@ -267,21 +267,21 @@ StairFunction_Test : UnitTest {
 
 			var sf = StairFunction(startValue);
 			sf.addAll((0..100).scramble, 'up'!101);
-			this.assertEquals(sf.maxHeight, 101 + startValue);
+			this.assertEquals(sf.maxHeight, 101 + startValue, report:false);
 
 			sf = StairFunction(startValue);
 			sf.addAll((0..49), ['up', 'down'].wrapExtend(50));
-			this.assertEquals(sf.maxHeight, 1 + startValue);
+			this.assertEquals(sf.maxHeight, 1 + startValue, report:false);
 
 			sf = StairFunction(startValue);
 			sf.addAll((0..9), [\up, \down, \up, \up, \down, \up, \up, \up, \down, \down]);
 			// 1 0 1 2 1 2 3 4 3 2
-			this.assertEquals(sf.maxHeight, 4 + startValue);
+			this.assertEquals(sf.maxHeight, 4 + startValue, report:false);
 
 			sf = StairFunction(startValue);
 			sf.addAll((0..9), [\down, \down, \up, \up, \down, \down, \down, \up, \up, \down]);
 			// -1 -2 -1 0 -1 -2 -3 -2 -1 -2
-			this.assertEquals(sf.maxHeight, startValue);
+			this.assertEquals(sf.maxHeight, startValue, report:false);
 		}
 	}
 
@@ -291,21 +291,21 @@ StairFunction_Test : UnitTest {
 
 			var sf = StairFunction(startValue);
 			sf.addAll((0..100).scramble, 'down'!101);
-			this.assertEquals(sf.minHeight, -101 + startValue);
+			this.assertEquals(sf.minHeight, -101 + startValue, report:false);
 
 			sf = StairFunction(startValue);
 			sf.addAll((0..49), ['down', 'up'].wrapExtend(50));
-			this.assertEquals(sf.minHeight, -1 + startValue);
+			this.assertEquals(sf.minHeight, -1 + startValue, report:false);
 
 			sf = StairFunction(startValue);
 			sf.addAll((0..9), [\up, \down, \up, \up, \down, \up, \up, \up, \down, \down]);
 			// 1 0 1 2 1 2 3 4 3 2
-			this.assertEquals(sf.minHeight, startValue);
+			this.assertEquals(sf.minHeight, startValue, report:false);
 
 			sf = StairFunction(startValue);
 			sf.addAll((0..9), [\down, \down, \up, \up, \down, \down, \down, \up, \up, \down]);
 			// -1 -2 -1 0 -1 -2 -3 -2 -1 -2
-			this.assertEquals(sf.minHeight, -3 + startValue);
+			this.assertEquals(sf.minHeight, -3 + startValue, report:false);
 		}
 	}
 
@@ -315,21 +315,21 @@ StairFunction_Test : UnitTest {
 
 			var sf = StairFunction(startValue);
 			sf.addAll((0..100).scramble, 'down'!101);
-			this.assertEquals(sf.finalHeight, -101 + startValue);
+			this.assertEquals(sf.finalHeight, -101 + startValue, report:false);
 
 			sf = StairFunction(startValue);
 			sf.addAll((0..49), ['down', 'up'].wrapExtend(50));
-			this.assertEquals(sf.finalHeight, startValue);
+			this.assertEquals(sf.finalHeight, startValue, report:false);
 
 			sf = StairFunction(startValue);
 			sf.addAll((0..9), [\up, \down, \up, \up, \down, \up, \up, \up, \down, \down]);
 			// 1 0 1 2 1 2 3 4 3 2
-			this.assertEquals(sf.finalHeight, 2 + startValue);
+			this.assertEquals(sf.finalHeight, 2 + startValue, report:false);
 
 			sf = StairFunction(startValue);
 			sf.addAll((0..9), [\down, \down, \up, \up, \down, \down, \down, \up, \up, \down]);
 			// -1 -2 -1 0 -1 -2 -3 -2 -1 -2
-			this.assertEquals(sf.finalHeight, -2 + startValue);
+			this.assertEquals(sf.finalHeight, -2 + startValue, report:false);
 		}
 	}
 
