@@ -240,14 +240,16 @@ DiscreteStairFunction : StairFunction {
 			Error("positionAtFreeSlotIndex: index must be nonnegative");
 		};
 
-		while { (intervalIndex < stepCount) && (index >= 0) } {
-			var interval = freeIntervals[intervalIndex];
-			var intervalSize = interval.last - interval.first + 1;
+		freeIntervals.do {
+			arg interval;
+			var intervalSize = this.pr_intervalSize(interval);
+
+			if(index < 0) {
+				Error("positionAtFreeSlotIndex: index exceeds number of free slots");
+			};
 			if(index < intervalSize) {^interval.first + index};
 			index = index - intervalSize;
 		};
-
-		Error("positionAtFreeSlotIndex: index exceeds number of free slots");
 	}
 
 		// TODO
