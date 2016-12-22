@@ -221,15 +221,14 @@ DiscreteStairFunction : StairFunction {
 		^if(interval[1] < interval[0]) {[]} {interval};
 	}
 
+	pr_intervalSize {
+		arg interval;
+
+		^interval.last - interval.first + 1;
+	}
+
 	freeSlotCount {
-		var count = 0;
-
-		freeIntervals.do {
-			|interval|
-			count = count + interval.last - interval.first + 1;
-		};
-
-		^count;
+		^freeIntervals.sum(this.pr_intervalSize(_));
 	}
 
 	// get the position of the nth free slot in the function graph
