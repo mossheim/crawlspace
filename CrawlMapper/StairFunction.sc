@@ -252,11 +252,35 @@ DiscreteStairFunction : StairFunction {
 		};
 	}
 
-		// TODO
-	}
+	// returns a list of all the intervals that are at a height == target
 	intervalsAtHeight {
+		arg target = 0;
+		var intervalList = [], height = startValue;
 
-		// TODO
+		if(height == target) {
+			if(stepCount == 0) {
+				intervalList = intervalList.add([leftBound, rightBound]);
+			} {
+				intervalList = intervalList.add([leftBound, stepPositions[0]]);
+			}
+		};
+
+		stepPositions.do {
+			arg position, i;
+			var direction = stepDirections[i];
+
+			height = height + this.class.directionValue(direction);
+
+			if(height == target) {
+				if(i + 1 < stepCount) {
+					intervalList = intervalList.add([position, stepPositions[i + 1]]);
+				} {
+					intervalList = intervalList.add([position, rightBound]);
+				}
+			}
+		};
+
+		^intervalList;
 	}
 
 	intervalsAtDepthOfAtMost {
