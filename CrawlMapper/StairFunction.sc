@@ -205,11 +205,7 @@ DiscreteStairFunction : StairFunction {
 
 		minStepGap = minStepGapIn;
 
-		if(minStepGap > (rightBound - leftBound)) {
-			freeIntervals = [];
-		} {
-			freeIntervals = [[leftBound+minStepGap, rightBound-minStepGap]];
-		}
+		freeIntervals = this.pr_gapShrinkInterval([leftBound, rightBound]);
 	}
 
 	pr_castPosition {
@@ -219,6 +215,13 @@ DiscreteStairFunction : StairFunction {
 	}
 
 	emptySlotCount {
+	pr_gapShrinkInterval {
+		arg interval;
+
+		interval = interval + [minStepGap, minStepGap.neg];
+		^if(interval[1] < interval[0]) {[]} {interval};
+	}
+
 		var count = 0;
 
 		freeIntervals.do {
