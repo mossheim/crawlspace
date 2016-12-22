@@ -214,7 +214,6 @@ DiscreteStairFunction : StairFunction {
 		^value.asInteger;
 	}
 
-	emptySlotCount {
 	pr_gapShrinkInterval {
 		arg interval;
 
@@ -222,6 +221,7 @@ DiscreteStairFunction : StairFunction {
 		^if(interval[1] < interval[0]) {[]} {interval};
 	}
 
+	freeSlotCount {
 		var count = 0;
 
 		freeIntervals.do {
