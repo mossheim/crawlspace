@@ -283,15 +283,15 @@ DiscreteStairFunction : StairFunction {
 		^intervalList;
 	}
 
-	intervalsAtDepthOfAtMost {
-		// TODO
+	intervalsAtHeightOfAtLeast {
+		// TODO?
 	}
 
-	growToHeight {
-		// TODO
+	intervalsAtHeightOfAtMost {
+		// TODO?
 	}
 
-	growByHeight {
-		// TODO
+	freeSlotsAtHeight {
+		// TODO?
 	}
 }
