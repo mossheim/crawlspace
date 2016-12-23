@@ -192,20 +192,20 @@ DiscreteStairFunction : StairFunction {
 	pr_init_discreteStairFunction {
 		arg leftBoundIn, rightBoundIn, minStepGapIn;
 
-		if(leftBoundIn >= rightBoundIn) {
+		leftBound = this.pr_castPosition(leftBoundIn);
+		rightBound = this.pr_castPosition(rightBoundIn);
+
+		if(leftBound >= rightBound) {
 			Error("leftBound must be strictly less than rightBound").throw;
 		};
 
-		leftBound = leftBoundIn;
-		rightBound = rightBoundIn;
+		minStepGap = this.pr_castPosition(minStepGapIn);
 
 		if(minStepGapIn <= 0) {
 			Error("minStepGap must be at least 1").throw;
 		};
 
-		minStepGap = minStepGapIn;
-
-		freeIntervals = this.pr_gapShrinkInterval([leftBound, rightBound]);
+		freeIntervals = this.pr_gapShrinkInterval([leftBound, rightBound]) !? _.bubble ? [];
 	}
 
 	pr_castPosition {
