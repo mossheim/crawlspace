@@ -271,7 +271,7 @@ DiscreteStairFunction : StairFunction {
 			if(stepCount == 0) {
 				intervalList = intervalList.add([leftBound, rightBound]);
 			} {
-				intervalList = intervalList.add([leftBound, stepPositions[0]]);
+				intervalList = intervalList.add([leftBound, stepPositions[0] - 1]);
 			}
 		};
 
@@ -283,7 +283,7 @@ DiscreteStairFunction : StairFunction {
 
 			if(height == target) {
 				if(i + 1 < stepCount) {
-					intervalList = intervalList.add([position, stepPositions[i + 1]]);
+					intervalList = intervalList.add([position, stepPositions[i + 1] - 1]);
 				} {
 					intervalList = intervalList.add([position, rightBound]);
 				}
