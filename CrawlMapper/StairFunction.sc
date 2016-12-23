@@ -218,7 +218,7 @@ DiscreteStairFunction : StairFunction {
 		arg interval;
 
 		interval = interval + [minStepGap, minStepGap.neg];
-		^if(interval[1] < interval[0]) {[]} {interval};
+		^if(interval[1] < interval[0]) {nil} {interval};
 	}
 
 	pr_intervalSize {
@@ -245,7 +245,7 @@ DiscreteStairFunction : StairFunction {
 		var position = 0, intervalIndex = 0;
 
 		if(index < 0) {
-			Error("positionAtFreeSlotIndex: index must be nonnegative");
+			Error("positionAtFreeSlotIndex: index must be nonnegative").throw;
 		};
 
 		freeIntervals.do {
@@ -253,11 +253,13 @@ DiscreteStairFunction : StairFunction {
 			var intervalSize = this.pr_intervalSize(interval);
 
 			if(index < 0) {
-				Error("positionAtFreeSlotIndex: index exceeds number of free slots");
+				Error("positionAtFreeSlotIndex: index exceeds number of free slots").throw;
 			};
 			if(index < intervalSize) {^interval.first + index};
 			index = index - intervalSize;
 		};
+
+		Error("positionAtFreeSlotIndex: index exceeds number of free slots").throw;
 	}
 
 	// returns a list of all the intervals that are at a height == target
