@@ -293,6 +293,39 @@ DiscreteStairFunction : StairFunction {
 		^intervalList;
 	}
 
+	add {
+		arg position, direction;
+		var intervalIndex, interval, leftInterval, rightInterval;
+
+		// should check first that the slot exists
+		position = this.pr_castPosition(position);
+
+		this.isSlotFree(position).not.if {
+			Error("add: slot % is not free".format(position)).throw;
+		};
+
+		super.add(position, direction);
+
+		intervalIndex = freeIntervals.selectIndices(position.inclusivelyBetween(*_)).first;
+
+		interval = freeIntervals.removeAt(intervalIndex);
+
+		leftInterval = [interval.first, position - minStepGap];
+		rightInterval = [position + minStepGap, interval.last];
+
+		if(this.pr_intervalSize(rightInterval) > 0) {
+			freeIntervals = freeIntervals.insert(intervalIndex, rightInterval);
+		};
+		if(this.pr_intervalSize(leftInterval) > 0) {
+			freeIntervals = freeIntervals.insert(intervalIndex, leftInterval);
+		};
+	}
+
+	addAll {
+		arg positions, directions;
+
+		this.shouldNotImplement(thisMethod);
+	}
 	intervalsAtHeightOfAtLeast {
 		// TODO?
 	}
