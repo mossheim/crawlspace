@@ -231,6 +231,14 @@ DiscreteStairFunction : StairFunction {
 		^freeIntervals.sum(this.pr_intervalSize(_));
 	}
 
+	isSlotFree {
+		arg position;
+
+		position = this.pr_castPosition(position);
+
+		^freeIntervals.any(position.inclusivelyBetween(*_));
+	}
+
 	// get the position of the nth free slot in the function graph
 	positionAtFreeSlotIndex {
 		arg index = 0;
