@@ -326,6 +326,15 @@ DiscreteStairFunction : StairFunction {
 
 		this.shouldNotImplement(thisMethod);
 	}
+
+	remove {
+	  // TODO
+	}
+
+	removeAt {
+		// TODO
+	}
+
 	intervalsAtHeightOfAtLeast {
 		// TODO?
 	}
