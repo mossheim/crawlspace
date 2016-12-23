@@ -336,5 +336,243 @@ StairFunction_Test : UnitTest {
 }
 
 DiscreteStairFunction_Test : UnitTest {
+	test_init {
+		var dsf = DiscreteStairFunction.new(0, 0, 100, 2);
 
+		this.assertEquals(dsf.startValue, 0);
+		this.assertEquals(dsf.leftBound, 0);
+		this.assertEquals(dsf.rightBound, 100);
+		this.assertEquals(dsf.minStepGap, 2);
+
+		dsf = DiscreteStairFunction.new(-2, -100, 50, 5);
+
+		this.assertEquals(dsf.startValue, -2);
+		this.assertEquals(dsf.leftBound, -100);
+		this.assertEquals(dsf.rightBound, 50);
+		this.assertEquals(dsf.minStepGap, 5);
+	}
+
+	test_initError_badBounds {
+		try {
+			var dsf = DiscreteStairFunction.new(0, 3, 0, 1);
+			this.failed(thisMethod, "Bad bounds should give an error.");
+		} {
+			|e|
+			// do nothing
+		}
+	}
+
+	test_initError_badGap {
+		try {
+			var dsf = DiscreteStairFunction.new(0, 0, 5, 0);
+			this.failed(thisMethod, "Bad gap should give an error.");
+		} {
+			|e|
+			// do nothing
+		};
+
+		try {
+			var dsf = DiscreteStairFunction.new(0, 0, 5, -5);
+			this.failed(thisMethod, "Bad gap should give an error.");
+		} {
+			|e|
+			// do nothing
+		};
+	}
+
+	test_gapShrinkInterval {
+		var dsf = DiscreteStairFunction(0, 0, 100, 2);
+
+		this.assertEquals(dsf.freeIntervals.size, 1);
+		this.assertEquals(dsf.freeIntervals[0], [2, 98]);
+
+		dsf = DiscreteStairFunction(0, 0, 10, 5);
+
+		this.assertEquals(dsf.freeIntervals.size, 1);
+		this.assertEquals(dsf.freeIntervals[0], [5, 5]);
+
+		dsf = DiscreteStairFunction(0, 0, 10, 6);
+
+		this.assertEquals(dsf.freeIntervals.size, 0);
+		this.assert(dsf.freeIntervals.isEmpty);
+	}
+
+	test_intervalSize {
+		var dsf = DiscreteStairFunction(0, 0, 100, 2);
+
+		this.assertEquals(dsf.pr_intervalSize([0, 9]), 10);
+		this.assertEquals(dsf.pr_intervalSize([-1, 1]), 3);
+		this.assertEquals(dsf.pr_intervalSize([10, 10]), 1);
+	}
+
+	test_castPosition {
+		var dsf = DiscreteStairFunction(0, 0, 100, 2);
+
+		dsf.add(3.2, \down);
+
+		this.assert(dsf.stepPositions[0].isInteger);
+		this.assertEquals(dsf.stepPositions[0], 3);
+	}
+
+	test_freeSlotCount {
+		var dsf = DiscreteStairFunction(0, 0, 9, 2);
+		// 2, 3, 4, 5, 6, 7
+		this.assertEquals(dsf.freeSlotCount, 6);
+
+		dsf.add(5, \down);
+		// 2, 3, 7
+		this.assertEquals(dsf.freeSlotCount, 3);
+
+		dsf.add(2, \up);
+		// 7
+		this.assertEquals(dsf.freeSlotCount, 1);
+
+		dsf.add(7, \down);
+		// none
+		this.assertEquals(dsf.freeSlotCount, 0);
+	}
+
+	test_positionAtFreeSlotIndex {
+		var dsf = DiscreteStairFunction(0, 0, 9, 2);
+		// 2, 3, 4, 5, 6, 7
+		var slots = [2, 3, 4, 5, 6, 7];
+		slots.do {
+			arg slot, i;
+
+			this.assertEquals(dsf.positionAtFreeSlotIndex(i), slot);
+		};
+
+		dsf.add(5, \down);
+		// 2, 3, 7
+		slots = [2, 3, 7];
+		slots.do {
+			arg slot, i;
+
+			this.assertEquals(dsf.positionAtFreeSlotIndex(i), slot);
+		};
+
+		dsf.add(2, \up);
+		// 7
+		slots = [7];
+		slots.do {
+			arg slot, i;
+
+			this.assertEquals(dsf.positionAtFreeSlotIndex(i), slot);
+		};
+	}
+
+	test_positionAtFreeSlotIndexError_negIndex {
+		var dsf = DiscreteStairFunction(0, 0, 9, 2);
+		// 2, 3, 4, 5, 6, 7
+		try {
+			dsf.positionAtFreeSlotIndex(-1);
+			this.failed(thisMethod, "Negative index should give an error.");
+		} {
+			// do nothing
+			|e|
+		}
+	}
+
+	test_positionAtFreeSlotIndexError_highIndex {
+		var dsf = DiscreteStairFunction(0, 0, 9, 2);
+		// 2, 3, 4, 5, 6, 7
+		try {
+			dsf.positionAtFreeSlotIndex(6);
+			this.failed(thisMethod, "Index out of bounds should give an error.");
+		} {
+			// do nothing
+			|e|
+		}
+	}
+
+	test_intervalsAtHeight {
+		var dsf = DiscreteStairFunction(0, 0, 9, 1);
+		// 0000 0000 00
+		dsf.add(1, \up);
+		dsf.add(2, \down);
+		dsf.add(4, \up);
+		dsf.add(6, \up);
+		dsf.add(7, \up);
+		dsf.add(8, \down);
+
+		// 0100 1123 22
+		this.assertEquals(dsf.intervalsAtHeight(0), [[0, 0], [2, 3]]);
+		this.assertEquals(dsf.intervalsAtHeight(1), [[1, 1], [4, 5]]);
+		this.assertEquals(dsf.intervalsAtHeight(2), [[6, 6], [8, 9]]);
+		this.assertEquals(dsf.intervalsAtHeight(3), [[7, 7]]);
+	}
+
+	test_isSlotFree {
+		var dsf = DiscreteStairFunction(0, 0, 10, 2);
+
+		dsf.add(6, \up);
+		// [2, 4], [8, 8]
+
+		[0,0,1,1,1,0,0,0,1,0,0].do {
+			|val, i|
+			this.assertEquals(dsf.isSlotFree(i), val.asBoolean, "slot % should% be free".format(i, val.asBoolean.if {" "} {" not"}));
+		}
+	}
+
+	test_addError_slotNotFree {
+		var dsf = DiscreteStairFunction(0, 0, 9, 2);
+
+		dsf.add(5, \up);
+
+		try {
+			dsf.add(6, \down);
+			this.failed(thisMethod, "Add in non-free slot should give an error.");
+		} {};
+
+		try {
+			dsf.add(8, \down);
+			this.failed(thisMethod, "Add in non-free slot should give an error.");
+		} {};
+
+		try {
+			dsf.add(4, \down);
+			this.failed(thisMethod, "Add in non-free slot should give an error.");
+		} {};
+
+		try {
+			dsf.add(-1, \down);
+			this.failed(thisMethod, "Add in non-free slot should give an error.");
+		} {};
+
+		try {
+			dsf.add(10, \down);
+			this.failed(thisMethod, "Add in non-free slot should give an error.");
+		} {};
+	}
+
+	/*test_addAllError_slotNotFree {
+		var dsf = DiscreteStairFunction(0, 0, 9, 2);
+
+		dsf.add(5, \up);
+
+		try {
+			dsf.addAll([6], [\down]);
+			this.failed(thisMethod, "AddAll in non-free slot should give an error.");
+		} {};
+
+		try {
+			dsf.addAll([8], [\down]);
+			this.failed(thisMethod, "AddAll in non-free slot should give an error.");
+		} {};
+
+		try {
+			dsf.addAll([4], [\down]);
+			this.failed(thisMethod, "AddAll in non-free slot should give an error.");
+		} {};
+
+		try {
+			dsf.addAll([-1], [\down]);
+			this.failed(thisMethod, "AddAll in non-free slot should give an error.");
+		} {};
+
+		try {
+			dsf.addAll([10], [\down]);
+			this.failed(thisMethod, "AddAll in non-free slot should give an error.");
+		} {};
+	}*/
 }
